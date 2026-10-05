@@ -58,7 +58,6 @@
 </head>
 <body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-purple-500 selection:text-white">
 
-  <!-- Top Navigation Header -->
   <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3 transition-all">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
 
@@ -71,9 +70,11 @@
           <div>
             <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
               MASTER EVENTOS
-              <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30">PRO</span>
+              <span id="sync-status" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Sincronizando...
+              </span>
             </h1>
-            <p class="text-xs text-slate-400">Control de Inventario & Personal</p>
+            <p class="text-xs text-slate-400">Control de Inventario en Tiempo Real</p>
           </div>
         </div>
 
@@ -101,6 +102,9 @@
 
       <!-- Quick Action Buttons -->
       <div class="hidden md:flex items-center gap-2">
+        <button onclick="seedInitialData()" title="Cargar datos de prueba si la nube está vacía" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Cargar Datos Demo
+        </button>
         <button onclick="openModal('modal-event')" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/30 flex items-center gap-1.5 transition-all">
           <i class="fa-solid fa-plus"></i> Nuevo Evento
         </button>
@@ -120,10 +124,12 @@
           <i class="fa-solid fa-box-archive"></i> Añadir Ítem
         </button>
       </div>
+      <button onclick="seedInitialData(); toggleMobileNav();" class="w-full p-2.5 bg-slate-800 text-amber-400 rounded-lg text-xs font-bold flex items-center justify-center gap-2 border border-amber-500/30">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Cargar Datos Demo Iniciales
+      </button>
     </div>
   </header>
 
-  <!-- App Body Layout -->
   <div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">
 
     <!-- Desktop Sidebar Navigation -->
@@ -152,10 +158,10 @@
 
       <div class="mt-auto p-3.5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-200 mb-1">
-          <i class="fa-solid fa-circle-info text-amber-400"></i> Tip de Control
+          <i class="fa-solid fa-wifi text-emerald-400"></i> Cloud Sync Activo
         </div>
         <p class="text-xs text-slate-400 leading-relaxed">
-          Asigna responsables a cada evento para hacer seguimiento directo del vestuario e instrumental entregado.
+          Cualquier cambio guardado se sincroniza instantáneamente entre móvil y ordenador.
         </p>
       </div>
     </aside>
@@ -170,13 +176,13 @@
         <div class="relative overflow-hidden rounded-3xl p-6 lg:p-8 gradient-brand shadow-xl">
           <div class="relative z-10 max-w-xl">
             <span class="px-3 py-1 rounded-full bg-black/20 text-white text-xs font-semibold backdrop-blur-md inline-block mb-3">
-              Sistema Interno Integrado
+              Sistema Cloud Multidispositivo
             </span>
             <h2 class="text-2xl lg:text-3xl font-black text-white tracking-tight mb-2">
-              ¡Hola! Bienvenido a MASTER EVENTOS
+              MASTER EVENTOS Sincronizado
             </h2>
             <p class="text-white/80 text-sm leading-relaxed mb-4">
-              Controla las existencias de utilería, barras móviles, insumos deportivos y la logística de personal asignado en tiempo real.
+              Gestión unificada de utilería, barras móviles, insumos deportivos y la logística de personal asignado en tiempo real.
             </p>
             <div class="flex flex-wrap gap-2">
               <button onclick="openModal('modal-event')" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-bold text-xs shadow-lg hover:bg-slate-100 transition-all">
@@ -187,7 +193,6 @@
               </button>
             </div>
           </div>
-          <!-- Decorative SVG/Icon background -->
           <i class="fa-solid fa-champagne-glasses absolute -right-6 -bottom-6 text-9xl text-white/10 rotate-12 pointer-events-none"></i>
         </div>
 
@@ -240,14 +245,14 @@
 
         </div>
 
-        <!-- Dashboard Split Section: Upcoming Events & Sub-Brand Quick Summary -->
+        <!-- Dashboard Split Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          <!-- Upcoming Events Column (2 Cols) -->
+          <!-- Upcoming Events Column -->
           <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Eventos Inminentes & Asignación
+                <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Eventos Inminentes
               </h3>
               <button onclick="switchTab('events')" class="text-xs text-purple-400 hover:text-purple-300 font-semibold">
                 Ver todos <i class="fa-solid fa-chevron-right text-[10px]"></i>
@@ -265,7 +270,6 @@
               <i class="fa-solid fa-sitemap text-pink-400"></i> Estado por Marca
             </h3>
 
-            <!-- MASTER SHOW CARD -->
             <div class="p-3.5 rounded-xl bg-slate-800/70 border border-pink-500/30 flex items-center justify-between">
               <div>
                 <span class="text-xs font-bold text-pink-400 block">MASTER SHOW</span>
@@ -277,11 +281,10 @@
               </div>
             </div>
 
-            <!-- DRINKMY CARD -->
             <div class="p-3.5 rounded-xl bg-slate-800/70 border border-blue-500/30 flex items-center justify-between">
               <div>
                 <span class="text-xs font-bold text-blue-400 block">DRINKMY</span>
-                <span class="text-[11px] text-slate-400">Barra Móvil, Coctelería, Utensilios</span>
+                <span class="text-[11px] text-slate-400">Barra Móvil, Coctelería</span>
               </div>
               <div class="text-right">
                 <span id="dash-brand-drinkmy-items" class="text-sm font-black text-white">0</span>
@@ -289,7 +292,6 @@
               </div>
             </div>
 
-            <!-- SPORTIZ CARD -->
             <div class="p-3.5 rounded-xl bg-slate-800/70 border border-emerald-500/30 flex items-center justify-between">
               <div>
                 <span class="text-xs font-bold text-emerald-400 block">SPORTIZ</span>
@@ -303,7 +305,7 @@
 
             <div class="p-3.5 rounded-xl bg-slate-800/50 border border-purple-500/30 flex items-center justify-between">
               <div>
-                <span class="text-xs font-bold text-purple-400 block">MASTER EVENTOS (General)</span>
+                <span class="text-xs font-bold text-purple-400 block">MASTER EVENTOS</span>
                 <span class="text-[11px] text-slate-400">Audio, Sonido, Estructuras</span>
               </div>
               <div class="text-right">
@@ -377,7 +379,6 @@
           </button>
         </div>
 
-        <!-- Events List View -->
         <div id="events-list-container" class="space-y-4">
           <!-- Rendered dynamically -->
         </div>
@@ -453,7 +454,6 @@
           </button>
         </div>
 
-        <!-- Workers Grid -->
         <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Rendered dynamically -->
         </div>
@@ -549,7 +549,6 @@
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">URL Fotografía (Opcional)</label>
           <input type="url" id="item-photo" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          <p class="text-[10px] text-slate-500 mt-1">Si se deja vacío, se asignará un ícono ilustrativo automáticamente.</p>
         </div>
 
         <div>
@@ -559,7 +558,7 @@
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
           <button type="button" onclick="closeModal('modal-item')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar Artículo</button>
+          <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar en la Nube</button>
         </div>
       </form>
     </div>
@@ -615,7 +614,7 @@
           </div>
         </div>
 
-        <!-- Inventory Item Selector for Event Assignment -->
+        <!-- Inventory Item Selector -->
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Asignar Ítems de Inventario Requeridos</label>
           <div id="event-inventory-assigner" class="space-y-2 max-h-48 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">
@@ -625,7 +624,7 @@
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
           <button type="button" onclick="closeModal('modal-event')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar Evento</button>
+          <button type="submit" class="px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar Evento en la Nube</button>
         </div>
       </form>
     </div>
@@ -651,7 +650,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Rol / Cargo *</label>
-            <input type="text" id="worker-role" required placeholder="Ej: Bartender / Animador / Técnico" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="worker-role" required placeholder="Ej: Bartender / Animador" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Teléfono / Celular</label>
@@ -671,137 +670,186 @@
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
           <button type="button" onclick="closeModal('modal-worker')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md">Registrar</button>
+          <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md">Registrar en la Nube</button>
         </div>
       </form>
     </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global application state
+    window.items = [];
+    window.workers = [];
+    window.events = [];
+
+    window.currentBrandFilter = 'ALL';
+    window.currentTab = 'dashboard';
+    window.currentDate = new Date();
+    window.selectedCalendarDateStr = null;
+
+    // Firebase App Configuration Setup
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'master-eventos-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined'
+      ? JSON.parse(__firebase_config)
+      : { apiKey: "demo-api-key", authDomain: "demo.firebaseapp.com", projectId: "demo-project" };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let isAuthReady = false;
+
+    // Authenticate with Firebase before subscribing
+    async function initAuth() {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+        isAuthReady = true;
+        setupRealtimeListeners();
+      } catch (err) {
+        console.error("Error al autenticar en Firebase:", err);
+        updateStatusIndicator(false, "Error de Autenticación");
+      }
+    }
+
+    // Helper paths using Rule 1 strictly
+    const getCollectionPath = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+    const getDocRef = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+
+    // Update connection status visual element
+    function updateStatusIndicator(isOnline, customText) {
+      const el = document.getElementById('sync-status');
+      if (!el) return;
+      if (isOnline) {
+        el.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30 flex items-center gap-1";
+        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> En Línea (Sincronizado)`;
+      } else {
+        el.className = "text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30 flex items-center gap-1";
+        el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> ${customText || 'Sincronizando...'}`;
+      }
+    }
+
+    // Set up real-time listeners for all 3 collections
+    function setupRealtimeListeners() {
+      if (!isAuthReady) return;
+
+      // 1. Listen to ITEMS collection
+      onSnapshot(getCollectionPath('items'), (snapshot) => {
+        window.items = [];
+        snapshot.forEach(doc => {
+          window.items.push({ id: doc.id, ...doc.data() });
+        });
+        updateStatusIndicator(true);
+        window.updateAppUI();
+      }, (err) => {
+        console.error("Error en listener de artículos:", err);
+        updateStatusIndicator(false, "Error al sincronizar");
+      });
+
+      // 2. Listen to WORKERS collection
+      onSnapshot(getCollectionPath('workers'), (snapshot) => {
+        window.workers = [];
+        snapshot.forEach(doc => {
+          window.workers.push({ id: doc.id, ...doc.data() });
+        });
+        updateStatusIndicator(true);
+        window.updateAppUI();
+      }, (err) => {
+        console.error("Error en listener de personal:", err);
+      });
+
+      // 3. Listen to EVENTS collection
+      onSnapshot(getCollectionPath('events'), (snapshot) => {
+        window.events = [];
+        snapshot.forEach(doc => {
+          window.events.push({ id: doc.id, ...doc.data() });
+        });
+        updateStatusIndicator(true);
+        window.updateAppUI();
+      }, (err) => {
+        console.error("Error en listener de eventos:", err);
+      });
+    }
+
+    /* FIRESTORE FIRESTORE SAVE & DELETE OPERATIONS */
+    window.dbSaveItem = async function(itemData) {
+      if (!auth.currentUser) return;
+      const ref = getDocRef('items', itemData.id);
+      await setDoc(ref, itemData, { merge: true });
+    };
+
+    window.dbDeleteItem = async function(id) {
+      if (!auth.currentUser) return;
+      await deleteDoc(getDocRef('items', id));
+    };
+
+    window.dbSaveEvent = async function(eventData) {
+      if (!auth.currentUser) return;
+      const ref = getDocRef('events', eventData.id);
+      await setDoc(ref, eventData, { merge: true });
+    };
+
+    window.dbDeleteEvent = async function(id) {
+      if (!auth.currentUser) return;
+      await deleteDoc(getDocRef('events', id));
+    };
+
+    window.dbSaveWorker = async function(workerData) {
+      if (!auth.currentUser) return;
+      const ref = getDocRef('workers', workerData.id);
+      await setDoc(ref, workerData, { merge: true });
+    };
+
+    window.dbDeleteWorker = async function(id) {
+      if (!auth.currentUser) return;
+      await deleteDoc(getDocRef('workers', id));
+    };
+
+    // Seed initial demonstration data directly into Firestore
+    window.seedInitialData = async function() {
+      if (!auth.currentUser) return;
+
+      updateStatusIndicator(false, "Cargando datos demo...");
+
+      const demoItems = [
+        { id: 'itm-1', name: 'Barra Ledes Retroiluminada Pro', brand: 'DRINKMY', category: 'Barra Móvil', quantity: 3, size: '2.5m x 1.1m', color: 'RGB Modulable', photo: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80', notes: 'Incluye conectores y dispensadores de hielo.' },
+        { id: 'itm-2', name: 'Máscaras Neón Gigantes Hora Loca', brand: 'MASTER SHOW', category: 'Props / Hora Loca', quantity: 12, size: 'Ajustable', color: 'Multicolor / LED', photo: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80', notes: 'Requieren pilas AA. Revisar estado tras cada uso.' },
+        { id: 'itm-3', name: 'Circuito Inflable Obstáculos', brand: 'SPORTIZ', category: 'Equipamiento Deportivo', quantity: 2, size: '15m x 4m', color: 'Amarillo / Verde', photo: 'https://images.unsplash.com/photo-1533561052604-c3beb6d55b8d?auto=format&fit=crop&w=500&q=80', notes: 'Incluye 2 turbinas de soplado de 1.5 HP.' },
+        { id: 'itm-4', name: 'Sistema Sonido Tri-amplificado 3000W', brand: 'MASTER EVENTOS', category: 'Audio y Luces', quantity: 4, size: 'Estándar', color: 'Negro Mate', photo: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80', notes: 'Incluye cables XLR 10m y atriles.' }
+      ];
+
+      const demoWorkers = [
+        { id: 'wrk-1', name: 'Mateo Benítez', role: 'Jefe de Barra & Coctelería', phone: '+593 99 876 5432', brand: 'DRINKMY' },
+        { id: 'wrk-2', name: 'Sofía Guerrero', role: 'Coordinadora Hora Loca', phone: '+593 98 765 4321', brand: 'MASTER SHOW' },
+        { id: 'wrk-3', name: 'Lucas Valencia', role: 'Líder de Logística Deportiva', phone: '+593 97 111 2222', brand: 'SPORTIZ' }
+      ];
+
+      const demoEvents = [
+        { id: 'evt-1', name: 'Boda Matrimonial - Barra VIP', brand: 'DRINKMY', date: '2026-10-15', location: 'Club Los Chillos, Quito', workerId: 'wrk-1', assignedItems: [{ itemId: 'itm-1', qty: 2 }] }
+      ];
+
+      for (const i of demoItems) await window.dbSaveItem(i);
+      for (const w of demoWorkers) await window.dbSaveWorker(w);
+      for (const e of demoEvents) await window.dbSaveEvent(e);
+
+      updateStatusIndicator(true);
+    };
+
+    // Start Firebase Authentication Workflow
+    initAuth();
+  </script>
+
   <script>
-    /* Global Application State */
-    let currentBrandFilter = 'ALL';
-    let currentTab = 'dashboard';
-    let currentDate = new Date();
-    let selectedCalendarDateStr = null;
-
-    // Sample initial dataset
-    const INITIAL_ITEMS = [
-      {
-        id: 'itm-1',
-        name: 'Barra Ledes Retroiluminada Pro',
-        brand: 'DRINKMY',
-        category: 'Barra Móvil',
-        quantity: 3,
-        size: '2.5m x 1.1m',
-        color: 'RGB Modulable',
-        photo: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye conectores de corriente y dispensadores de hielo.'
-      },
-      {
-        id: 'itm-2',
-        name: 'Máscaras Neón Gigantes Cabeza Hora Loca',
-        brand: 'MASTER SHOW',
-        category: 'Props / Hora Loca',
-        quantity: 12,
-        size: 'Ajustable',
-        color: 'Multicolor / LED',
-        photo: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',
-        notes: 'Requieren pilas AA. Revisar estado tras cada uso.'
-      },
-      {
-        id: 'itm-3',
-        name: 'Circuito Inflable Obstáculos mañanas deportivas',
-        brand: 'SPORTIZ',
-        category: 'Equipamiento Deportivo',
-        quantity: 2,
-        size: '15m x 4m',
-        color: 'Amarillo / Verde',
-        photo: 'https://images.unsplash.com/photo-1533561052604-c3beb6d55b8d?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye 2 turbinas de soplado de 1.5 HP.'
-      },
-      {
-        id: 'itm-4',
-        name: 'Sistema de Sonido Tri-amplificado 3000W',
-        brand: 'MASTER EVENTOS',
-        category: 'Audio y Luces',
-        quantity: 4,
-        size: 'Estándar',
-        color: 'Negro Mate',
-        photo: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye cables XLR 10m y atriles de elevación.'
-      },
-      {
-        id: 'itm-5',
-        name: 'Vestuarios de Temática Retro / Disco 80s',
-        brand: 'MASTER SHOW',
-        category: 'Vestuario e Indumentaria',
-        quantity: 8,
-        size: 'M / L',
-        color: 'Dorado y Plateado',
-        photo: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80',
-        notes: 'Lavar en seco únicamente. Revisar cierres y lentejuelas.'
-      }
-    ];
-
-    const INITIAL_WORKERS = [
-      { id: 'wrk-1', name: 'Mateo Benítez', role: 'Jefe de Barra & Coctelería', phone: '+593 99 876 5432', brand: 'DRINKMY' },
-      { id: 'wrk-2', name: 'Sofía Guerrero', role: 'Coordinadora Hora Loca', phone: '+593 98 765 4321', brand: 'MASTER SHOW' },
-      { id: 'wrk-3', name: 'Lucas Valencia', role: 'Líder de Logística Deportiva', phone: '+593 97 111 2222', brand: 'SPORTIZ' },
-      { id: 'wrk-4', name: 'Andrés Morales', role: 'Técnico de Iluminación y Audio', phone: '+593 99 333 4444', brand: 'MASTER EVENTOS' }
-    ];
-
-    const INITIAL_EVENTS = [
-      {
-        id: 'evt-1',
-        name: 'Boda Matrimonial - Barra VIP & Hora Loca',
-        brand: 'DRINKMY',
-        date: '2026-10-15',
-        location: 'Club Los Chillos, Quito',
-        workerId: 'wrk-1',
-        assignedItems: [
-          { itemId: 'itm-1', qty: 2 },
-          { itemId: 'itm-2', qty: 6 }
-        ]
-      },
-      {
-        id: 'evt-2',
-        name: 'Mañana Deportiva Colegio Interamericano',
-        brand: 'SPORTIZ',
-        date: '2026-10-20',
-        location: 'Canchas del Parque La Carolina',
-        workerId: 'wrk-3',
-        assignedItems: [
-          { itemId: 'itm-3', qty: 2 }
-        ]
-      }
-    ];
-
-    // LocalStorage helper utilities
-    function getStoredData(key, fallback) {
-      const data = localStorage.getItem('master_eventos_' + key);
-      return data ? JSON.parse(data) : fallback;
-    }
-
-    function setStoredData(key, value) {
-      localStorage.setItem('master_eventos_' + key, JSON.stringify(value));
-    }
-
-    // App State Wrappers
-    let items = getStoredData('items', INITIAL_ITEMS);
-    let workers = getStoredData('workers', INITIAL_WORKERS);
-    let events = getStoredData('events', INITIAL_EVENTS);
-
-    // Save helper wrapper
-    function saveData() {
-      setStoredData('items', items);
-      setStoredData('workers', workers);
-      setStoredData('events', events);
-      updateAppUI();
-    }
-
     /* Tab Switcher Logic */
     function switchTab(tabId) {
-      currentTab = tabId;
+      window.currentTab = tabId;
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById('tab-' + tabId).classList.remove('hidden');
 
@@ -831,9 +879,8 @@
       menu.classList.toggle('hidden');
     }
 
-    /* Sub-Brand Filter Selector */
     function setBrandFilter(brand) {
-      currentBrandFilter = brand;
+      window.currentBrandFilter = brand;
       document.querySelectorAll('.brand-filter-btn').forEach(btn => {
         btn.classList.remove('bg-purple-600', 'text-white', 'shadow-sm');
         btn.classList.add('bg-slate-800', 'text-slate-300');
@@ -846,10 +893,10 @@
       renderCurrentTab();
     }
 
-    /* Calculate Stock / Occupancy Helper */
+    /* Stock Occupancy Calculator */
     function getItemOccupiedQty(itemId) {
       let occupied = 0;
-      events.forEach(evt => {
+      (window.events || []).forEach(evt => {
         if (evt.assignedItems) {
           const found = evt.assignedItems.find(i => i.itemId === itemId);
           if (found) occupied += Number(found.qty || 0);
@@ -867,24 +914,22 @@
       }
     }
 
-    /* Render Current Active Tab View */
     function renderCurrentTab() {
-      if (currentTab === 'dashboard') renderDashboard();
-      if (currentTab === 'inventory') renderInventory();
-      if (currentTab === 'events') renderEvents();
-      if (currentTab === 'calendar') renderCalendar();
-      if (currentTab === 'workers') renderWorkers();
+      if (window.currentTab === 'dashboard') renderDashboard();
+      if (window.currentTab === 'inventory') renderInventory();
+      if (window.currentTab === 'events') renderEvents();
+      if (window.currentTab === 'calendar') renderCalendar();
+      if (window.currentTab === 'workers') renderWorkers();
     }
 
-    function updateAppUI() {
+    window.updateAppUI = function() {
       renderCurrentTab();
       populateWorkerSelects();
-    }
+    };
 
     /* DASHBOARD RENDER */
     function renderDashboard() {
-      // Calculate Stats
-      const filteredItems = currentBrandFilter === 'ALL' ? items : items.filter(i => i.brand === currentBrandFilter);
+      const filteredItems = window.currentBrandFilter === 'ALL' ? window.items : window.items.filter(i => i.brand === window.currentBrandFilter);
       const totalItemsCount = filteredItems.length;
       const totalUnitsCount = filteredItems.reduce((acc, i) => acc + Number(i.quantity || 0), 0);
 
@@ -893,33 +938,31 @@
         totalInUse += getItemOccupiedQty(i.id);
       });
 
-      const filteredEvents = currentBrandFilter === 'ALL' ? events : events.filter(e => e.brand === currentBrandFilter);
+      const filteredEvents = window.currentBrandFilter === 'ALL' ? window.events : window.events.filter(e => e.brand === window.currentBrandFilter);
 
       document.getElementById('stat-total-items').textContent = totalItemsCount;
       document.getElementById('stat-total-units').textContent = `${totalUnitsCount} unidades en total`;
       document.getElementById('stat-in-use').textContent = totalInUse;
       document.getElementById('stat-upcoming-events').textContent = filteredEvents.length;
-      document.getElementById('stat-total-staff').textContent = workers.length;
+      document.getElementById('stat-total-staff').textContent = window.workers.length;
 
-      // Brand quick summaries
-      document.getElementById('dash-brand-show-items').textContent = items.filter(i => i.brand === 'MASTER SHOW').length;
-      document.getElementById('dash-brand-drinkmy-items').textContent = items.filter(i => i.brand === 'DRINKMY').length;
-      document.getElementById('dash-brand-sportiz-items').textContent = items.filter(i => i.brand === 'SPORTIZ').length;
-      document.getElementById('dash-brand-master-items').textContent = items.filter(i => i.brand === 'MASTER EVENTOS').length;
+      document.getElementById('dash-brand-show-items').textContent = window.items.filter(i => i.brand === 'MASTER SHOW').length;
+      document.getElementById('dash-brand-drinkmy-items').textContent = window.items.filter(i => i.brand === 'DRINKMY').length;
+      document.getElementById('dash-brand-sportiz-items').textContent = window.items.filter(i => i.brand === 'SPORTIZ').length;
+      document.getElementById('dash-brand-master-items').textContent = window.items.filter(i => i.brand === 'MASTER EVENTOS').length;
 
-      // Render upcoming events snippet
       const container = document.getElementById('dashboard-upcoming-events-list');
       if (filteredEvents.length === 0) {
         container.innerHTML = `
           <div class="text-center py-6 text-slate-500 text-xs">
-            No hay eventos agendados para este filtro.
+            No hay eventos agendados aún. <button onclick="seedInitialData()" class="text-purple-400 underline ml-1">¿Cargar Datos Demo?</button>
           </div>
         `;
         return;
       }
 
       container.innerHTML = filteredEvents.slice(0, 4).map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
+        const worker = window.workers.find(w => w.id === evt.workerId);
         const brandBadge = getBrandBadgeClass(evt.brand);
         const itemCount = evt.assignedItems ? evt.assignedItems.reduce((a, b) => a + Number(b.qty || 0), 0) : 0;
 
@@ -955,8 +998,8 @@
 
       const grid = document.getElementById('inventory-grid');
 
-      const filtered = items.filter(item => {
-        const matchBrand = currentBrandFilter === 'ALL' || item.brand === currentBrandFilter;
+      const filtered = window.items.filter(item => {
+        const matchBrand = window.currentBrandFilter === 'ALL' || item.brand === window.currentBrandFilter;
         const matchCat = catFilter === 'ALL' || item.category === catFilter;
         const matchSearch = item.name.toLowerCase().includes(searchQuery) ||
                             (item.notes && item.notes.toLowerCase().includes(searchQuery)) ||
@@ -991,7 +1034,6 @@
         return `
           <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all flex flex-col group">
 
-            <!-- Item Photo Header -->
             <div class="relative h-36 bg-slate-800 overflow-hidden">
               <img src="${item.photo || imgPlaceholder}" onerror="this.src='${imgPlaceholder}'" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
@@ -1007,7 +1049,6 @@
               </div>
             </div>
 
-            <!-- Card Body -->
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
               <div>
                 <h3 class="font-bold text-sm text-white line-clamp-1 group-hover:text-purple-400 transition-colors">${item.name}</h3>
@@ -1020,7 +1061,6 @@
                 ${item.notes ? `<p class="text-[11px] text-slate-400 italic mt-2 line-clamp-2">${item.notes}</p>` : ''}
               </div>
 
-              <!-- Stock Availability Meter -->
               <div class="pt-2 border-t border-slate-800/80 space-y-1.5">
                 <div class="flex items-center justify-between text-[11px]">
                   <span class="text-slate-400">Disponibilidad:</span>
@@ -1038,7 +1078,6 @@
                 </div>
               </div>
 
-              <!-- Actions -->
               <div class="flex items-center justify-end gap-1.5 pt-1">
                 <button onclick="editItem('${item.id}')" class="p-2 rounded-lg bg-slate-800 hover:bg-purple-600/20 text-slate-300 hover:text-purple-400 text-xs transition-colors" title="Editar">
                   <i class="fa-solid fa-pen-to-square"></i>
@@ -1058,7 +1097,7 @@
     /* EVENTS RENDER */
     function renderEvents() {
       const container = document.getElementById('events-list-container');
-      const filtered = currentBrandFilter === 'ALL' ? events : events.filter(e => e.brand === currentBrandFilter);
+      const filtered = window.currentBrandFilter === 'ALL' ? window.events : window.events.filter(e => e.brand === window.currentBrandFilter);
 
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -1072,11 +1111,11 @@
       }
 
       container.innerHTML = filtered.map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
+        const worker = window.workers.find(w => w.id === evt.workerId);
         const brandBadge = getBrandBadgeClass(evt.brand);
 
         const assignedItemsList = (evt.assignedItems || []).map(ai => {
-          const item = items.find(i => i.id === ai.itemId);
+          const item = window.items.find(i => i.id === ai.itemId);
           if (!item) return '';
           return `
             <div class="flex items-center justify-between bg-slate-900/60 p-2 rounded-lg text-xs border border-slate-800">
@@ -1108,7 +1147,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Location & Responsable -->
               <div class="space-y-2">
                 <div class="flex items-center gap-2 text-xs text-slate-300">
                   <i class="fa-solid fa-location-dot w-5 text-pink-400 text-center"></i>
@@ -1128,7 +1166,6 @@
                 ` : ''}
               </div>
 
-              <!-- Assigned Items -->
               <div>
                 <h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5">
                   <i class="fa-solid fa-boxes-packing text-purple-400"></i> Inventario Reservado:
@@ -1146,8 +1183,8 @@
 
     /* CALENDAR RENDER */
     function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
+      const year = window.currentDate.getFullYear();
+      const month = window.currentDate.getMonth();
 
       const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
@@ -1158,20 +1195,18 @@
       const grid = document.getElementById('calendar-days-grid');
       grid.innerHTML = '';
 
-      // Blank padded days
       for (let i = 0; i < firstDayIndex; i++) {
         grid.innerHTML += `<div class="h-20 sm:h-24 bg-slate-900/30 rounded-xl border border-slate-800/40 opacity-40"></div>`;
       }
 
       const todayStr = new Date().toISOString().split('T')[0];
 
-      // Render actual days
       for (let day = 1; day <= totalDays; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayEvents = events.filter(e => e.date === dateStr && (currentBrandFilter === 'ALL' || e.brand === currentBrandFilter));
+        const dayEvents = window.events.filter(e => e.date === dateStr && (window.currentBrandFilter === 'ALL' || e.brand === window.currentBrandFilter));
 
         const isToday = todayStr === dateStr;
-        const isSelected = selectedCalendarDateStr === dateStr;
+        const isSelected = window.selectedCalendarDateStr === dateStr;
 
         grid.innerHTML += `
           <div onclick="selectCalendarDate('${dateStr}')" class="h-20 sm:h-24 p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
@@ -1196,19 +1231,19 @@
     }
 
     function changeMonth(delta) {
-      currentDate.setMonth(currentDate.getMonth() + delta);
+      window.currentDate.setMonth(window.currentDate.getMonth() + delta);
       renderCalendar();
     }
 
     function jumpToToday() {
-      currentDate = new Date();
-      selectedCalendarDateStr = currentDate.toISOString().split('T')[0];
+      window.currentDate = new Date();
+      window.selectedCalendarDateStr = window.currentDate.toISOString().split('T')[0];
       renderCalendar();
-      selectCalendarDate(selectedCalendarDateStr);
+      selectCalendarDate(window.selectedCalendarDateStr);
     }
 
     function selectCalendarDate(dateStr) {
-      selectedCalendarDateStr = dateStr;
+      window.selectedCalendarDateStr = dateStr;
       renderCalendar();
 
       const detailsContainer = document.getElementById('calendar-day-details');
@@ -1218,7 +1253,7 @@
       titleSpan.textContent = dateStr;
       detailsContainer.classList.remove('hidden');
 
-      const dayEvents = events.filter(e => e.date === dateStr && (currentBrandFilter === 'ALL' || e.brand === currentBrandFilter));
+      const dayEvents = window.events.filter(e => e.date === dateStr && (window.currentBrandFilter === 'ALL' || e.brand === window.currentBrandFilter));
 
       if (dayEvents.length === 0) {
         eventsList.innerHTML = `<p class="text-xs text-slate-500 italic">Sin eventos registrados para este día.</p>`;
@@ -1226,7 +1261,7 @@
       }
 
       eventsList.innerHTML = dayEvents.map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
+        const worker = window.workers.find(w => w.id === evt.workerId);
         return `
           <div class="p-3 rounded-xl bg-slate-800 border border-slate-700 flex justify-between items-center text-xs">
             <div>
@@ -1245,7 +1280,7 @@
     /* WORKERS RENDER */
     function renderWorkers() {
       const grid = document.getElementById('workers-grid');
-      const filtered = currentBrandFilter === 'ALL' ? workers : workers.filter(w => w.brand === 'TODAS' || w.brand === currentBrandFilter);
+      const filtered = window.currentBrandFilter === 'ALL' ? window.workers : window.workers.filter(w => w.brand === 'TODAS' || w.brand === window.currentBrandFilter);
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -1258,8 +1293,7 @@
       }
 
       grid.innerHTML = filtered.map(wrk => {
-        // Find assigned events for this worker
-        const assignedEvents = events.filter(e => e.workerId === wrk.id);
+        const assignedEvents = window.events.filter(e => e.workerId === wrk.id);
 
         return `
           <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
@@ -1308,17 +1342,15 @@
       document.getElementById(modalId).classList.add('hidden');
     }
 
-    /* POPULATE WORKERS SELECT IN EVENT FORM */
     function populateWorkerSelects() {
       const select = document.getElementById('event-worker');
       if (!select) return;
 
-      select.innerHTML = workers.map(w => `<option value="${w.id}">${w.name} - ${w.role}</option>`).join('');
+      select.innerHTML = window.workers.map(w => `<option value="${w.id}">${w.name} - ${w.role}</option>`).join('');
 
-      // Populate Inventory Items Assigner in Event Form
       const assigner = document.getElementById('event-inventory-assigner');
       if (assigner) {
-        assigner.innerHTML = items.map(item => `
+        assigner.innerHTML = window.items.map(item => `
           <div class="flex items-center justify-between text-xs py-1 border-b border-slate-900">
             <span class="text-slate-300">${item.name} (${item.brand})</span>
             <div class="flex items-center gap-2">
@@ -1330,8 +1362,8 @@
       }
     }
 
-    /* SAVE ITEM */
-    function saveItem(e) {
+    /* REALTIME CRUD HANDLERS (SAVES DIRECTLY TO FIRESTORE) */
+    async function saveItem(e) {
       e.preventDefault();
       const id = document.getElementById('item-id').value;
 
@@ -1347,20 +1379,13 @@
         notes: document.getElementById('item-notes').value
       };
 
-      if (id) {
-        const index = items.findIndex(i => i.id === id);
-        if (index !== -1) items[index] = itemData;
-      } else {
-        items.push(itemData);
-      }
-
-      saveData();
+      await window.dbSaveItem(itemData);
       closeModal('modal-item');
       document.getElementById('form-item').reset();
     }
 
     function editItem(id) {
-      const item = items.find(i => i.id === id);
+      const item = window.items.find(i => i.id === id);
       if (!item) return;
 
       document.getElementById('item-id').value = item.id;
@@ -1377,19 +1402,14 @@
       openModal('modal-item');
     }
 
-    function deleteItem(id) {
-      if (confirm('¿Estás seguro de eliminar este artículo del inventario?')) {
-        items = items.filter(i => i.id !== id);
-        saveData();
-      }
+    async function deleteItem(id) {
+      await window.dbDeleteItem(id);
     }
 
-    /* SAVE EVENT */
-    function saveEvent(e) {
+    async function saveEvent(e) {
       e.preventDefault();
       const id = document.getElementById('event-id').value;
 
-      // Collect assigned inventory quantities
       const assignedItems = [];
       document.querySelectorAll('.event-item-qty').forEach(input => {
         const qty = Number(input.value || 0);
@@ -1411,20 +1431,13 @@
         assignedItems: assignedItems
       };
 
-      if (id) {
-        const index = events.findIndex(evt => evt.id === id);
-        if (index !== -1) events[index] = eventData;
-      } else {
-        events.push(eventData);
-      }
-
-      saveData();
+      await window.dbSaveEvent(eventData);
       closeModal('modal-event');
       document.getElementById('form-event').reset();
     }
 
     function editEvent(id) {
-      const evt = events.find(e => e.id === id);
+      const evt = window.events.find(e => e.id === id);
       if (!evt) return;
 
       populateWorkerSelects();
@@ -1436,7 +1449,6 @@
       document.getElementById('event-location').value = evt.location;
       document.getElementById('event-worker').value = evt.workerId;
 
-      // Set item quantities
       if (evt.assignedItems) {
         evt.assignedItems.forEach(ai => {
           const input = document.querySelector(`.event-item-qty[data-item-id="${ai.itemId}"]`);
@@ -1448,15 +1460,11 @@
       openModal('modal-event');
     }
 
-    function deleteEvent(id) {
-      if (confirm('¿Deseas cancelar y eliminar este evento?')) {
-        events = events.filter(e => e.id !== id);
-        saveData();
-      }
+    async function deleteEvent(id) {
+      await window.dbDeleteEvent(id);
     }
 
-    /* SAVE WORKER */
-    function saveWorker(e) {
+    async function saveWorker(e) {
       e.preventDefault();
       const newWorker = {
         id: 'wrk-' + Date.now(),
@@ -1466,25 +1474,14 @@
         brand: document.getElementById('worker-brand').value
       };
 
-      workers.push(newWorker);
-      saveData();
+      await window.dbSaveWorker(newWorker);
       closeModal('modal-worker');
       document.getElementById('form-worker').reset();
     }
 
-    function deleteWorker(id) {
-      if (confirm('¿Eliminar este trabajador del registro?')) {
-        workers = workers.filter(w => w.id !== id);
-        saveData();
-      }
+    async function deleteWorker(id) {
+      await window.dbDeleteWorker(id);
     }
-
-    /* INITIALIZATION ON LOAD */
-    window.onload = function() {
-      // Set today's date in calendar selection
-      selectedCalendarDateStr = currentDate.toISOString().split('T')[0];
-      updateAppUI();
-    };
   </script>
 </body>
 </html>
