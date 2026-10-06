@@ -329,7 +329,8 @@ function renderEvents(){
     return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
         <div><div class="flex items-center gap-2 mb-1"><span class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md border ${getBrandBadgeClass(evt.brand)}">${evt.brand}</span><span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${dateLabel(evt)}</span></div><h3 class="text-base font-extrabold text-white">${esc(evt.name)}</h3></div>
-        <div class="flex items-center gap-2 self-end sm:self-auto"><button onclick="openEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"><i class="fa-solid fa-pen-to-square mr-1"></i> Editar</button>
+        <div class="flex items-center gap-2 self-end sm:self-auto"><button onclick="copySummary('${evt.id}',this)" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-400"><i class="fa-regular fa-copy mr-1"></i> Copiar resumen</button>
+        <button onclick="openEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"><i class="fa-solid fa-pen-to-square mr-1"></i> Editar</button>
         <button onclick="deleteEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-xs font-semibold text-rose-400"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button></div></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-2"><div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-location-dot w-5 text-pink-400 text-center"></i><span><b>Ubicación:</b> ${esc(evt.location)}</span></div>
@@ -375,6 +376,28 @@ function renderWorkers(){
 }
 function deleteWorker(id){if(confirm('¿Eliminar este trabajador del registro?')){workers=workers.filter(w=>w.id!==id);saveData()}}
 function deleteEvent(id){if(confirm('¿Deseas cancelar y eliminar este evento?')){events=events.filter(e=>e.id!==id);saveData()}}
+
+/* ---- Resumen para pegar en WhatsApp ---- */
+function eventSummary(e){
+  const w=workers.find(x=>x.id===e.workerId),L=[];
+  const P=x=>x.name+' ('+x.role+')'+(x.phone?' - '+x.phone:'');
+  L.push('*'+e.name+'*','');
+  L.push('Marca: '+e.brand);
+  L.push('Fecha: '+(endOf(e)===e.date?e.date:e.date+' al '+endOf(e)));
+  if(e.tStart)L.push('Hora del show: '+e.tStart+' a '+e.tEnd);
+  L.push('Lugar: '+e.location,'');
+  L.push('Responsable: '+(w?P(w):'Sin asignar'));
+  const ex=(e.extraWorkers||[]).map(id=>workers.find(z=>z.id===id)).filter(Boolean);
+  if(ex.length){L.push('','Equipo:');ex.forEach(x=>L.push('- '+P(x)))}
+  const its=(e.assignedItems||[]).map(a=>{const it=items.find(i=>i.id===a.itemId);return it?'- '+it.name+(it.size?' ('+it.size+')':'')+' x'+a.qty:''}).filter(Boolean);
+  if(its.length)L.push('','Ítems asignados:',...its);
+  return L.join('\n');
+}
+async function copySummary(id,btn){
+  const t=eventSummary(events.find(e=>e.id===id));
+  try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}
+  const o=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-check mr-1"></i> ¡Copiado!';setTimeout(()=>{btn.innerHTML=o},1800);
+}
 
 /* ---- Modales ---- */
 const fld=(l,h,c='')=>`<div class="${c}"><label class="block text-xs font-semibold text-slate-300 mb-1">${l}</label>${h}</div>`;
