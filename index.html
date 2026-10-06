@@ -1,1490 +1,236 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-900 text-slate-100">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MASTER EVENTOS - Gestión de Inventario y Equipos</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          colors: {
-            master: {
-              purple: '#7c3aed',
-              show: '#ec4899',   // MASTER SHOW (Hora loca)
-              drinkmy: '#3b82f6', // DRINKMY (Barra móvil)
-              sportiz: '#10b981', // SPORTIZ (Deportes)
-              gold: '#f59e0b'
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #1e293b;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #64748b;
-    }
-    .gradient-brand {
-      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #3b82f6 100%);
-    }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MASTER EVENTOS - Gestión de Inventario y Equipos</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif']},colors:{master:{purple:'#7c3aed',show:'#ec4899',drinkmy:'#3b82f6',sportiz:'#10b981',gold:'#f59e0b'}}}}}
+</script>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#1e293b}
+::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#64748b}
+.gradient-brand{background:linear-gradient(135deg,#7c3aed 0%,#ec4899 50%,#3b82f6 100%)}
+.glass-card{background:rgba(30,41,59,.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08)}
+</style>
 </head>
 <body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-purple-500 selection:text-white">
 
-  <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3 transition-all">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-      <!-- Logo & Main Brand -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dashboard')">
-          <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-purple-500/20">
-            M
-          </div>
-          <div>
-            <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
-              MASTER EVENTOS
-              <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30">PRO</span>
-            </h1>
-            <p class="text-xs text-slate-400">Control de Inventario & Personal</p>
-          </div>
-        </div>
-
-        <!-- Mobile Menu Toggle Button -->
-        <button id="mobileNavToggle" onclick="toggleMobileNav()" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800">
-          <i class="fa-solid fa-bars text-xl"></i>
-        </button>
-      </div>
-
-      <!-- Sub-Brand Filter Selector Switcher -->
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-        <button onclick="setBrandFilter('ALL')" id="brand-btn-ALL" class="brand-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all bg-purple-600 text-white shadow-sm">
-          <i class="fa-solid fa-layer-group mr-1.5"></i> Todos
-        </button>
-        <button onclick="setBrandFilter('MASTER SHOW')" id="brand-btn-MASTER SHOW" class="brand-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700">
-          <span class="w-2 h-2 rounded-full bg-pink-500 inline-block mr-1.5"></span> MASTER SHOW
-        </button>
-        <button onclick="setBrandFilter('DRINKMY')" id="brand-btn-DRINKMY" class="brand-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700">
-          <span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-1.5"></span> DRINKMY
-        </button>
-        <button onclick="setBrandFilter('SPORTIZ')" id="brand-btn-SPORTIZ" class="brand-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5"></span> SPORTIZ
-        </button>
-      </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="hidden md:flex items-center gap-2">
-        <button onclick="openModal('modal-event')" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/30 flex items-center gap-1.5 transition-all">
-          <i class="fa-solid fa-plus"></i> Nuevo Evento
-        </button>
-        <button onclick="openModal('modal-item')" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
-          <i class="fa-solid fa-box-archive"></i> Nuevo Artículo
-        </button>
-      </div>
+<!-- MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
+<div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4">
+  <div class="glass-card max-w-md w-full p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+    <div class="text-center">
+      <div class="w-12 h-12 rounded-2xl gradient-brand mx-auto flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-purple-500/30 mb-3">M</div>
+      <h2 id="auth-title" class="text-xl font-extrabold text-white">Iniciar Sesión</h2>
+      <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Ingresa tus datos para acceder al sistema privado</p>
     </div>
 
-    <!-- Mobile Dropdown Navigation Menu -->
-    <div id="mobileNavMenu" class="hidden md:hidden pt-3 border-t border-slate-800 mt-3 flex flex-col gap-2">
-      <div class="grid grid-cols-2 gap-2 pb-2">
-        <button onclick="openModal('modal-event'); toggleMobileNav();" class="p-2.5 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2">
-          <i class="fa-solid fa-plus"></i> Crear Evento
-        </button>
-        <button onclick="openModal('modal-item'); toggleMobileNav();" class="p-2.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-bold flex items-center justify-center gap-2 border border-slate-700">
-          <i class="fa-solid fa-box-archive"></i> Añadir Ítem
-        </button>
+    <!-- Formulario de Iniciar Sesión -->
+    <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Correo o Usuario</label>
+        <input type="email" id="login-email" required placeholder="usuario@mastereventos.com" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+        <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+      </div>
+      <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-900/40 transition-all">Ingresar</button>
+      <p class="text-center text-xs text-slate-400">¿No tienes cuenta? <button type="button" onclick="toggleAuthMode('register')" class="text-purple-400 font-bold hover:underline">Registrarse</button></p>
+    </form>
+
+    <!-- Formulario de Registro -->
+    <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo</label>
+        <input type="text" id="reg-name" required placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Correo Electrónico</label>
+        <input type="email" id="reg-email" required placeholder="usuario@mastereventos.com" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+        <input type="password" id="reg-password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Cargo / Responsabilidad</label>
+        <select id="reg-role" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+          <option value="JEFE MASTER EVENTOS">JEFE MASTER EVENTOS</option>
+          <option value="JEFE MASTER SHOW">JEFE MASTER SHOW</option>
+          <option value="ENCARGADA DE INVENTARIO">ENCARGADA DE INVENTARIO</option>
+        </select>
+      </div>
+      <button type="submit" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-pink-900/40 transition-all">Crear Cuenta</button>
+      <p class="text-center text-xs text-slate-400">¿Ya tienes usuario? <button type="button" onclick="toggleAuthMode('login')" class="text-pink-400 font-bold hover:underline">Iniciar Sesión</button></p>
+    </form>
+  </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN -->
+<div id="app-content" class="hidden flex-1 flex flex-col h-full">
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3 transition-all">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-purple-500/20">M</div>
+          <div>
+            <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">MASTER EVENTOS <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30">PRO</span></h1>
+            <p id="user-display" class="text-xs text-slate-400">Cargando usuario...</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="logout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-right-from-bracket mr-1"></i> Salir</button>
+          <button onclick="toggleMobileNav()" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800"><i class="fa-solid fa-bars text-xl"></i></button>
+        </div>
+      </div>
+      <div id="brand-filters" class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0"></div>
+      <div class="hidden md:flex items-center gap-2">
+        <button onclick="openEvent()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/30 flex items-center gap-1.5 transition-all"><i class="fa-solid fa-plus"></i> Nuevo Evento</button>
+        <button onclick="openItem()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"><i class="fa-solid fa-box-archive"></i> Nuevo Artículo</button>
       </div>
     </div>
   </header>
 
-  <!-- App Body Layout -->
   <div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">
-
-    <!-- Desktop Sidebar Navigation -->
     <aside class="hidden md:flex flex-col w-64 bg-slate-900/50 border-r border-slate-800 p-4 gap-1 select-none">
       <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menú Principal</div>
-
-      <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-purple-600/15 text-purple-400 border border-purple-500/30">
-        <i class="fa-solid fa-chart-pie w-5 text-center"></i> Panel General
-      </button>
-
-      <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="nav-tab-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-all">
-        <i class="fa-solid fa-boxes-stacked w-5 text-center"></i> Inventario / Ítems
-      </button>
-
-      <button onclick="switchTab('events')" id="tab-btn-events" class="nav-tab-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-all">
-        <i class="fa-solid fa-calendar-check w-5 text-center"></i> Eventos & Ocupación
-      </button>
-
-      <button onclick="switchTab('calendar')" id="tab-btn-calendar" class="nav-tab-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-all">
-        <i class="fa-solid fa-calendar-days w-5 text-center"></i> Vista Calendario
-      </button>
-
-      <button onclick="switchTab('workers')" id="tab-btn-workers" class="nav-tab-btn flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-all">
-        <i class="fa-solid fa-users w-5 text-center"></i> Equipo & Personal
-      </button>
-
-      <div class="mt-auto p-3.5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50">
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-200 mb-1">
-          <i class="fa-solid fa-circle-info text-amber-400"></i> Tip de Control
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Asigna responsables a cada evento para hacer seguimiento directo del vestuario e instrumental entregado.
-        </p>
-      </div>
+      <div id="side-nav" class="flex flex-col gap-1"></div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 md:pb-6">
-
-      <!-- TAB 1: DASHBOARD -->
-      <section id="tab-dashboard" class="tab-content space-y-6">
-
-        <!-- Header welcome banner -->
-        <div class="relative overflow-hidden rounded-3xl p-6 lg:p-8 gradient-brand shadow-xl">
-          <div class="relative z-10 max-w-xl">
-            <span class="px-3 py-1 rounded-full bg-black/20 text-white text-xs font-semibold backdrop-blur-md inline-block mb-3">
-              Sistema Interno Integrado
-            </span>
-            <h2 class="text-2xl lg:text-3xl font-black text-white tracking-tight mb-2">
-              ¡Hola! Bienvenido a MASTER EVENTOS
-            </h2>
-            <p class="text-white/80 text-sm leading-relaxed mb-4">
-              Controla las existencias de utilería, barras móviles, insumos deportivos y la logística de personal asignado en tiempo real.
-            </p>
-            <div class="flex flex-wrap gap-2">
-              <button onclick="openModal('modal-event')" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-bold text-xs shadow-lg hover:bg-slate-100 transition-all">
-                + Crear Evento
-              </button>
-              <button onclick="openModal('modal-worker')" class="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 font-bold text-xs transition-all">
-                + Registrar Personal
-              </button>
-            </div>
-          </div>
-          <!-- Decorative SVG/Icon background -->
-          <i class="fa-solid fa-champagne-glasses absolute -right-6 -bottom-6 text-9xl text-white/10 rotate-12 pointer-events-none"></i>
-        </div>
-
-        <!-- Quick Stats Cards Grid -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-
-          <div class="glass-card p-4 rounded-2xl border-l-4 border-l-purple-500 flex items-center justify-between">
-            <div>
-              <p class="text-xs text-slate-400 font-medium">Total Artículos</p>
-              <h3 class="text-2xl font-black text-white mt-0.5" id="stat-total-items">0</h3>
-              <p class="text-[11px] text-purple-400 mt-1" id="stat-total-units">0 unidades en stock</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-          </div>
-
-          <div class="glass-card p-4 rounded-2xl border-l-4 border-l-amber-500 flex items-center justify-between">
-            <div>
-              <p class="text-xs text-slate-400 font-medium">Ítems Ocupados</p>
-              <h3 class="text-2xl font-black text-amber-400 mt-0.5" id="stat-in-use">0</h3>
-              <p class="text-[11px] text-slate-400 mt-1">En eventos en curso</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-hand-holding-box"></i>
-            </div>
-          </div>
-
-          <div class="glass-card p-4 rounded-2xl border-l-4 border-l-pink-500 flex items-center justify-between">
-            <div>
-              <p class="text-xs text-slate-400 font-medium">Próximos Eventos</p>
-              <h3 class="text-2xl font-black text-pink-400 mt-0.5" id="stat-upcoming-events">0</h3>
-              <p class="text-[11px] text-slate-400 mt-1">Agendados activamente</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-calendar-star"></i>
-            </div>
-          </div>
-
-          <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-500 flex items-center justify-between">
-            <div>
-              <p class="text-xs text-slate-400 font-medium">Personal Activo</p>
-              <h3 class="text-2xl font-black text-emerald-400 mt-0.5" id="stat-total-staff">0</h3>
-              <p class="text-[11px] text-slate-400 mt-1">Trabajadores registrados</p>
-            </div>
-            <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-user-gear"></i>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Dashboard Split Section: Upcoming Events & Sub-Brand Quick Summary -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          <!-- Upcoming Events Column (2 Cols) -->
-          <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Eventos Inminentes & Asignación
-              </h3>
-              <button onclick="switchTab('events')" class="text-xs text-purple-400 hover:text-purple-300 font-semibold">
-                Ver todos <i class="fa-solid fa-chevron-right text-[10px]"></i>
-              </button>
-            </div>
-
-            <div id="dashboard-upcoming-events-list" class="space-y-3">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-
-          <!-- Sub-brand Status Overview Column -->
-          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
-            <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-sitemap text-pink-400"></i> Estado por Marca
-            </h3>
-
-            <!-- MASTER SHOW CARD -->
-            <div class="p-3.5 rounded-xl bg-slate-800/70 border border-pink-500/30 flex items-center justify-between">
-              <div>
-                <span class="text-xs font-bold text-pink-400 block">MASTER SHOW</span>
-                <span class="text-[11px] text-slate-400">Hora Loca, Luces, Vestuarios</span>
-              </div>
-              <div class="text-right">
-                <span id="dash-brand-show-items" class="text-sm font-black text-white">0</span>
-                <span class="text-[10px] text-slate-400 block">ítems</span>
-              </div>
-            </div>
-
-            <!-- DRINKMY CARD -->
-            <div class="p-3.5 rounded-xl bg-slate-800/70 border border-blue-500/30 flex items-center justify-between">
-              <div>
-                <span class="text-xs font-bold text-blue-400 block">DRINKMY</span>
-                <span class="text-[11px] text-slate-400">Barra Móvil, Coctelería, Utensilios</span>
-              </div>
-              <div class="text-right">
-                <span id="dash-brand-drinkmy-items" class="text-sm font-black text-white">0</span>
-                <span class="text-[10px] text-slate-400 block">ítems</span>
-              </div>
-            </div>
-
-            <!-- SPORTIZ CARD -->
-            <div class="p-3.5 rounded-xl bg-slate-800/70 border border-emerald-500/30 flex items-center justify-between">
-              <div>
-                <span class="text-xs font-bold text-emerald-400 block">SPORTIZ</span>
-                <span class="text-[11px] text-slate-400">Mañanas Deportivas, Inflables</span>
-              </div>
-              <div class="text-right">
-                <span id="dash-brand-sportiz-items" class="text-sm font-black text-white">0</span>
-                <span class="text-[10px] text-slate-400 block">ítems</span>
-              </div>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-slate-800/50 border border-purple-500/30 flex items-center justify-between">
-              <div>
-                <span class="text-xs font-bold text-purple-400 block">MASTER EVENTOS (General)</span>
-                <span class="text-[11px] text-slate-400">Audio, Sonido, Estructuras</span>
-              </div>
-              <div class="text-right">
-                <span id="dash-brand-master-items" class="text-sm font-black text-white">0</span>
-                <span class="text-[10px] text-slate-400 block">ítems</span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- TAB 2: INVENTORY MANAGEMENT -->
+      <section id="tab-dashboard" class="tab-content space-y-6"></section>
       <section id="tab-inventory" class="tab-content hidden space-y-6">
-
-        <!-- Top Toolbar & Search -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
-
           <div class="flex-1 relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="inventory-search" oninput="renderInventory()" placeholder="Buscar ítem por nombre, notas, talla..." class="w-full pl-10 pr-4 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500">
+            <input type="text" id="inventory-search" oninput="renderInventory()" placeholder="Buscar ítem por nombre, notas, talla..." class="w-full pl-10 pr-4 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
           </div>
-
-          <!-- Filters -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            <select id="filter-category" onchange="renderInventory()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-purple-500">
-              <option value="ALL">Todas las Categorías</option>
-              <option value="Barra Móvil">Barra Móvil</option>
-              <option value="Props / Hora Loca">Props / Hora Loca</option>
-              <option value="Equipamiento Deportivo">Equipamiento Deportivo</option>
-              <option value="Audio y Luces">Audio y Luces</option>
-              <option value="Vestuario e Indumentaria">Vestuario e Indumentaria</option>
-              <option value="Mobiliario">Mobiliario</option>
-            </select>
-
-            <select id="filter-stock" onchange="renderInventory()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-purple-500">
-              <option value="ALL">Todos los Estados</option>
-              <option value="AVAILABLE">Solo Disponibles</option>
-              <option value="IN_USE">Ocupados/En Evento</option>
-            </select>
-
-            <button onclick="openModal('modal-item')" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold whitespace-nowrap shadow-md flex items-center gap-1.5">
-              <i class="fa-solid fa-plus"></i> Nuevo Artículo
-            </button>
-          </div>
-
+          <button onclick="openPanelModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold whitespace-nowrap shadow-md flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Nuevo Panel</button>
         </div>
-
-        <!-- Inventory Grid Display -->
-        <div id="inventory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          <!-- Item Cards rendered dynamically -->
-        </div>
-
+        <div id="panels-list" class="space-y-4"></div>
       </section>
-
-      <!-- TAB 3: EVENTS MANAGEMENT -->
-      <section id="tab-events" class="tab-content hidden space-y-6">
-
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
-          <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-calendar-lines text-pink-400"></i> Eventos Programados y Ocupación
-            </h2>
-            <p class="text-xs text-slate-400">Asigna personal responsable y reservas de equipos para cada celebración</p>
-          </div>
-
-          <button onclick="openModal('modal-event')" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto">
-            <i class="fa-solid fa-plus"></i> Agendar Evento
-          </button>
-        </div>
-
-        <!-- Events List View -->
-        <div id="events-list-container" class="space-y-4">
-          <!-- Rendered dynamically -->
-        </div>
-
-      </section>
-
-      <!-- TAB 4: CALENDAR VIEW -->
-      <section id="tab-calendar" class="tab-content hidden space-y-6">
-
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div class="flex items-center gap-3">
-              <button onclick="changeMonth(-1)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200">
-                <i class="fa-solid fa-chevron-left text-xs"></i>
-              </button>
-              <h2 id="calendar-month-year" class="text-lg font-black text-white min-w-[160px] text-center">
-                Octubre 2026
-              </h2>
-              <button onclick="changeMonth(1)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200">
-                <i class="fa-solid fa-chevron-right text-xs"></i>
-              </button>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button onclick="jumpToToday()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-semibold border border-slate-700">
-                Hoy
-              </button>
-            </div>
-          </div>
-
-          <!-- Calendar Grid Header Days -->
-          <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2">
-            <div>Dom</div>
-            <div>Lun</div>
-            <div>Mar</div>
-            <div>Mié</div>
-            <div>Jue</div>
-            <div>Vie</div>
-            <div>Sáb</div>
-          </div>
-
-          <!-- Calendar Days Grid -->
-          <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 lg:gap-2">
-            <!-- Calendar day cells rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- Selected Date Event Inspector -->
-        <div id="calendar-day-details" class="glass-card p-5 rounded-2xl hidden">
-          <h3 class="font-bold text-sm text-purple-400 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-location-dot"></i> Eventos para la fecha seleccionada: <span id="selected-date-title" class="text-white"></span>
-          </h3>
-          <div id="calendar-day-events-list" class="space-y-3">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-      </section>
-
-      <!-- TAB 5: WORKERS MANAGEMENT -->
-      <section id="tab-workers" class="tab-content hidden space-y-6">
-
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
-          <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-id-card text-emerald-400"></i> Registro de Trabajadores y Responsables
-            </h2>
-            <p class="text-xs text-slate-400">Controla quién es responsable de la indumentaria y equipos en cada evento</p>
-          </div>
-
-          <button onclick="openModal('modal-worker')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto">
-            <i class="fa-solid fa-user-plus"></i> Registrar Trabajador
-          </button>
-        </div>
-
-        <!-- Workers Grid -->
-        <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Rendered dynamically -->
-        </div>
-
-      </section>
-
+      <section id="tab-events" class="tab-content hidden space-y-6"><div id="events-list-container" class="space-y-4"></div></section>
+      <section id="tab-workers" class="tab-content hidden space-y-6"><div id="workers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div></section>
     </main>
-
   </div>
+</div>
 
-  <!-- Mobile Bottom Tab Menu Bar -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5 flex items-center justify-around">
-    <button onclick="switchTab('dashboard')" id="mobile-tab-btn-dashboard" class="flex flex-col items-center gap-1 p-2 text-purple-400">
-      <i class="fa-solid fa-chart-pie text-lg"></i>
-      <span class="text-[10px] font-medium">Inicio</span>
-    </button>
-    <button onclick="switchTab('inventory')" id="mobile-tab-btn-inventory" class="flex flex-col items-center gap-1 p-2 text-slate-400">
-      <i class="fa-solid fa-boxes-stacked text-lg"></i>
-      <span class="text-[10px] font-medium">Inventario</span>
-    </button>
-    <button onclick="switchTab('events')" id="mobile-tab-btn-events" class="flex flex-col items-center gap-1 p-2 text-slate-400">
-      <i class="fa-solid fa-calendar-check text-lg"></i>
-      <span class="text-[10px] font-medium">Eventos</span>
-    </button>
-    <button onclick="switchTab('calendar')" id="mobile-tab-btn-calendar" class="flex flex-col items-center gap-1 p-2 text-slate-400">
-      <i class="fa-solid fa-calendar-days text-lg"></i>
-      <span class="text-[10px] font-medium">Calendario</span>
-    </button>
-    <button onclick="switchTab('workers')" id="mobile-tab-btn-workers" class="flex flex-col items-center gap-1 p-2 text-slate-400">
-      <i class="fa-solid fa-users text-lg"></i>
-      <span class="text-[10px] font-medium">Equipo</span>
-    </button>
-  </nav>
+<div id="modals"></div>
 
-  <!-- MODAL: ADD / EDIT ITEM -->
-  <div id="modal-item" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
-      <button onclick="closeModal('modal-item')" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
+<!-- SDKs de Firebase (v9/v10 Modular vía CDN) -->
+<!-- SDKs de Firebase y Lógica del Sistema -->
+<script type="module">
+  // 1. Importamos las funciones necesarias desde CDN
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      <h3 id="modal-item-title" class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-box text-purple-400"></i> Registrar Nuevo Artículo
-      </h3>
+  // 2. Tu configuración real de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgCTiU-NGy6rNMofNw5b_1rCyuXFxdqEc",
+    authDomain: "inventario-master-eventos.firebaseapp.com",
+    projectId: "inventario-master-eventos",
+    storageBucket: "inventario-master-eventos.firebasestorage.app",
+    messagingSenderId: "366733726373",
+    appId: "1:366733726373:web:5c11a73d2568936780734c",
+    measurementId: "G-L8107NBY2X"
+  };
 
-      <form id="form-item" onsubmit="saveItem(event)" class="space-y-4">
-        <input type="hidden" id="item-id">
+  // 3. Inicializamos los servicios
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre del Artículo *</label>
-          <input type="text" id="item-name" required placeholder="Ej: Cabeza Móvil LED 150W / Barra Bartender" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-        </div>
+  let currentUserData = null;
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Marca / Sub-empresa *</label>
-            <select id="item-brand" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-              <option value="MASTER EVENTOS">MASTER EVENTOS</option>
-              <option value="MASTER SHOW">MASTER SHOW</option>
-              <option value="DRINKMY">DRINKMY</option>
-              <option value="SPORTIZ">SPORTIZ</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Categoría *</label>
-            <select id="item-category" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-              <option value="Barra Móvil">Barra Móvil</option>
-              <option value="Props / Hora Loca">Props / Hora Loca</option>
-              <option value="Equipamiento Deportivo">Equipamiento Deportivo</option>
-              <option value="Audio y Luces">Audio y Luces</option>
-              <option value="Vestuario e Indumentaria">Vestuario e Indumentaria</option>
-              <option value="Mobiliario">Mobiliario</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Unidades *</label>
-            <input type="number" id="item-quantity" min="1" required value="1" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Talla (Opcional)</label>
-            <input type="text" id="item-size" placeholder="S, M, L, Única" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Color / Tono</label>
-            <input type="text" id="item-color" placeholder="Negro, Neón..." class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">URL Fotografía (Opcional)</label>
-          <input type="url" id="item-photo" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          <p class="text-[10px] text-slate-500 mt-1">Si se deja vacío, se asignará un ícono ilustrativo automáticamente.</p>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Notas / Detalles adicionales</label>
-          <textarea id="item-notes" rows="2" placeholder="Observaciones de cuidado, estado físico o ubicación de almacenamiento..." class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-          <button type="button" onclick="closeModal('modal-item')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar Artículo</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: CREATE / EDIT EVENT -->
-  <div id="modal-event" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
-      <button onclick="closeModal('modal-event')" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <h3 id="modal-event-title" class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-calendar-plus text-pink-400"></i> Registrar & Agendar Evento
-      </h3>
-
-      <form id="form-event" onsubmit="saveEvent(event)" class="space-y-4">
-        <input type="hidden" id="event-id">
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre o Título del Evento *</label>
-          <input type="text" id="event-name" required placeholder="Ej: Boda Matrimonial López - Hora Loca & Barra" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-pink-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Sub-marca Encargada *</label>
-            <select id="event-brand" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-pink-500">
-              <option value="MASTER EVENTOS">MASTER EVENTOS</option>
-              <option value="MASTER SHOW">MASTER SHOW</option>
-              <option value="DRINKMY">DRINKMY</option>
-              <option value="SPORTIZ">SPORTIZ</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Fecha del Evento *</label>
-            <input type="date" id="event-date" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-pink-500">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Lugar / Ubicación del Evento *</label>
-            <input type="text" id="event-location" required placeholder="Ej: Salón Villa Real, Quinta Las Rosas" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-pink-500">
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Trabajador Responsable *</label>
-            <select id="event-worker" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-pink-500">
-              <!-- Dynamically populated -->
-            </select>
-          </div>
-        </div>
-
-        <!-- Inventory Item Selector for Event Assignment -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Asignar Ítems de Inventario Requeridos</label>
-          <div id="event-inventory-assigner" class="space-y-2 max-h-48 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-          <button type="button" onclick="closeModal('modal-event')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold rounded-xl shadow-md">Guardar Evento</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: ADD WORKER -->
-  <div id="modal-worker" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
-      <button onclick="closeModal('modal-worker')" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-user-plus text-emerald-400"></i> Registrar Trabajador
-      </h3>
-
-      <form id="form-worker" onsubmit="saveWorker(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo *</label>
-          <input type="text" id="worker-name" required placeholder="Ej: Carlos Mendoza" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Rol / Cargo *</label>
-            <input type="text" id="worker-role" required placeholder="Ej: Bartender / Animador / Técnico" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Teléfono / Celular</label>
-            <input type="tel" id="worker-phone" placeholder="+593 99 123 4567" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Sub-marca Principal</label>
-          <select id="worker-brand" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-            <option value="TODAS">TODAS / MASTER EVENTOS</option>
-            <option value="MASTER SHOW">MASTER SHOW</option>
-            <option value="DRINKMY">DRINKMY</option>
-            <option value="SPORTIZ">SPORTIZ</option>
-          </select>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-          <button type="button" onclick="closeModal('modal-worker')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md">Registrar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    /* Global Application State */
-    let currentBrandFilter = 'ALL';
-    let currentTab = 'dashboard';
-    let currentDate = new Date();
-    let selectedCalendarDateStr = null;
-
-    // Sample initial dataset
-    const INITIAL_ITEMS = [
-      {
-        id: 'itm-1',
-        name: 'Barra Ledes Retroiluminada Pro',
-        brand: 'DRINKMY',
-        category: 'Barra Móvil',
-        quantity: 3,
-        size: '2.5m x 1.1m',
-        color: 'RGB Modulable',
-        photo: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye conectores de corriente y dispensadores de hielo.'
-      },
-      {
-        id: 'itm-2',
-        name: 'Máscaras Neón Gigantes Cabeza Hora Loca',
-        brand: 'MASTER SHOW',
-        category: 'Props / Hora Loca',
-        quantity: 12,
-        size: 'Ajustable',
-        color: 'Multicolor / LED',
-        photo: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',
-        notes: 'Requieren pilas AA. Revisar estado tras cada uso.'
-      },
-      {
-        id: 'itm-3',
-        name: 'Circuito Inflable Obstáculos mañanas deportivas',
-        brand: 'SPORTIZ',
-        category: 'Equipamiento Deportivo',
-        quantity: 2,
-        size: '15m x 4m',
-        color: 'Amarillo / Verde',
-        photo: 'https://images.unsplash.com/photo-1533561052604-c3beb6d55b8d?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye 2 turbinas de soplado de 1.5 HP.'
-      },
-      {
-        id: 'itm-4',
-        name: 'Sistema de Sonido Tri-amplificado 3000W',
-        brand: 'MASTER EVENTOS',
-        category: 'Audio y Luces',
-        quantity: 4,
-        size: 'Estándar',
-        color: 'Negro Mate',
-        photo: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80',
-        notes: 'Incluye cables XLR 10m y atriles de elevación.'
-      },
-      {
-        id: 'itm-5',
-        name: 'Vestuarios de Temática Retro / Disco 80s',
-        brand: 'MASTER SHOW',
-        category: 'Vestuario e Indumentaria',
-        quantity: 8,
-        size: 'M / L',
-        color: 'Dorado y Plateado',
-        photo: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80',
-        notes: 'Lavar en seco únicamente. Revisar cierres y lentejuelas.'
-      }
-    ];
-
-    const INITIAL_WORKERS = [
-      { id: 'wrk-1', name: 'Mateo Benítez', role: 'Jefe de Barra & Coctelería', phone: '+593 99 876 5432', brand: 'DRINKMY' },
-      { id: 'wrk-2', name: 'Sofía Guerrero', role: 'Coordinadora Hora Loca', phone: '+593 98 765 4321', brand: 'MASTER SHOW' },
-      { id: 'wrk-3', name: 'Lucas Valencia', role: 'Líder de Logística Deportiva', phone: '+593 97 111 2222', brand: 'SPORTIZ' },
-      { id: 'wrk-4', name: 'Andrés Morales', role: 'Técnico de Iluminación y Audio', phone: '+593 99 333 4444', brand: 'MASTER EVENTOS' }
-    ];
-
-    const INITIAL_EVENTS = [
-      {
-        id: 'evt-1',
-        name: 'Boda Matrimonial - Barra VIP & Hora Loca',
-        brand: 'DRINKMY',
-        date: '2026-10-15',
-        location: 'Club Los Chillos, Quito',
-        workerId: 'wrk-1',
-        assignedItems: [
-          { itemId: 'itm-1', qty: 2 },
-          { itemId: 'itm-2', qty: 6 }
-        ]
-      },
-      {
-        id: 'evt-2',
-        name: 'Mañana Deportiva Colegio Interamericano',
-        brand: 'SPORTIZ',
-        date: '2026-10-20',
-        location: 'Canchas del Parque La Carolina',
-        workerId: 'wrk-3',
-        assignedItems: [
-          { itemId: 'itm-3', qty: 2 }
-        ]
-      }
-    ];
-
-    // LocalStorage helper utilities
-    function getStoredData(key, fallback) {
-      const data = localStorage.getItem('master_eventos_' + key);
-      return data ? JSON.parse(data) : fallback;
+  // Cambiar entre vista de Login y Registro
+  window.toggleAuthMode = (mode) => {
+    if (mode === 'register') {
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('form-register').classList.remove('hidden');
+      document.getElementById('auth-title').textContent = 'Crear Usuario';
+      document.getElementById('auth-subtitle').textContent = 'Registra tus datos y asigna tu cargo';
+    } else {
+      document.getElementById('form-register').classList.add('hidden');
+      document.getElementById('form-login').classList.remove('hidden');
+      document.getElementById('auth-title').textContent = 'Iniciar Sesión';
+      document.getElementById('auth-subtitle').textContent = 'Ingresa tus datos para acceder al sistema privado';
     }
+  };
 
-    function setStoredData(key, value) {
-      localStorage.setItem('master_eventos_' + key, JSON.stringify(value));
-    }
+  // Manejo de Registro de Usuarios en la Nube
+  window.handleRegister = async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const role = document.getElementById('reg-role').value;
 
-    // App State Wrappers
-    let items = getStoredData('items', INITIAL_ITEMS);
-    let workers = getStoredData('workers', INITIAL_WORKERS);
-    let events = getStoredData('events', INITIAL_EVENTS);
-
-    // Save helper wrapper
-    function saveData() {
-      setStoredData('items', items);
-      setStoredData('workers', workers);
-      setStoredData('events', events);
-      updateAppUI();
-    }
-
-    /* Tab Switcher Logic */
-    function switchTab(tabId) {
-      currentTab = tabId;
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-
-      // Update Desktop Buttons
-      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        btn.classList.remove('bg-purple-600/15', 'text-purple-400', 'border', 'border-purple-500/30');
-        btn.classList.add('text-slate-400');
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      // Guardamos la información del perfil y rol en Firestore
+      await setDoc(doc(db, "users", res.user.uid), {
+        name,
+        email,
+        role,
+        createdAt: new Date()
       });
-      const activeBtn = document.getElementById('tab-btn-' + tabId);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-purple-600/15', 'text-purple-400', 'border', 'border-purple-500/30');
-        activeBtn.classList.remove('text-slate-400');
-      }
-
-      // Update Mobile Nav
-      document.querySelectorAll('nav button').forEach(btn => btn.classList.replace('text-purple-400', 'text-slate-400'));
-      const activeMobileBtn = document.getElementById('mobile-tab-btn-' + tabId);
-      if (activeMobileBtn) {
-        activeMobileBtn.classList.replace('text-slate-400', 'text-purple-400');
-      }
-
-      renderCurrentTab();
+      alert("Usuario registrado con éxito.");
+    } catch (err) {
+      alert("Error al registrar usuario: " + err.message);
     }
+  };
 
-    function toggleMobileNav() {
-      const menu = document.getElementById('mobileNavMenu');
-      menu.classList.toggle('hidden');
+  // Manejo de Iniciar Sesión
+  window.handleLogin = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      alert("Error al iniciar sesión: Verifique el correo o contraseña.");
     }
+  };
 
-    /* Sub-Brand Filter Selector */
-    function setBrandFilter(brand) {
-      currentBrandFilter = brand;
-      document.querySelectorAll('.brand-filter-btn').forEach(btn => {
-        btn.classList.remove('bg-purple-600', 'text-white', 'shadow-sm');
-        btn.classList.add('bg-slate-800', 'text-slate-300');
-      });
-      const activeBtn = document.getElementById('brand-btn-' + brand);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-purple-600', 'text-white', 'shadow-sm');
-        activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
-      }
-      renderCurrentTab();
+  // Cerrar Sesión
+  window.logout = () => signOut(auth);
+
+  // Detector de Sesión Activa
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      currentUserData = userDoc.exists() ? userDoc.data() : { name: user.email, role: 'USUARIO' };
+
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('app-content').classList.remove('hidden');
+      document.getElementById('user-display').innerHTML = `<b class="text-purple-300">${currentUserData.name}</b> (${currentUserData.role})`;
+    } else {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('app-content').classList.add('hidden');
     }
-
-    /* Calculate Stock / Occupancy Helper */
-    function getItemOccupiedQty(itemId) {
-      let occupied = 0;
-      events.forEach(evt => {
-        if (evt.assignedItems) {
-          const found = evt.assignedItems.find(i => i.itemId === itemId);
-          if (found) occupied += Number(found.qty || 0);
-        }
-      });
-      return occupied;
-    }
-
-    function getBrandBadgeClass(brand) {
-      switch (brand) {
-        case 'MASTER SHOW': return 'bg-pink-500/20 text-pink-300 border-pink-500/30';
-        case 'DRINKMY': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-        case 'SPORTIZ': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-        default: return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-      }
-    }
-
-    /* Render Current Active Tab View */
-    function renderCurrentTab() {
-      if (currentTab === 'dashboard') renderDashboard();
-      if (currentTab === 'inventory') renderInventory();
-      if (currentTab === 'events') renderEvents();
-      if (currentTab === 'calendar') renderCalendar();
-      if (currentTab === 'workers') renderWorkers();
-    }
-
-    function updateAppUI() {
-      renderCurrentTab();
-      populateWorkerSelects();
-    }
-
-    /* DASHBOARD RENDER */
-    function renderDashboard() {
-      // Calculate Stats
-      const filteredItems = currentBrandFilter === 'ALL' ? items : items.filter(i => i.brand === currentBrandFilter);
-      const totalItemsCount = filteredItems.length;
-      const totalUnitsCount = filteredItems.reduce((acc, i) => acc + Number(i.quantity || 0), 0);
-
-      let totalInUse = 0;
-      filteredItems.forEach(i => {
-        totalInUse += getItemOccupiedQty(i.id);
-      });
-
-      const filteredEvents = currentBrandFilter === 'ALL' ? events : events.filter(e => e.brand === currentBrandFilter);
-
-      document.getElementById('stat-total-items').textContent = totalItemsCount;
-      document.getElementById('stat-total-units').textContent = `${totalUnitsCount} unidades en total`;
-      document.getElementById('stat-in-use').textContent = totalInUse;
-      document.getElementById('stat-upcoming-events').textContent = filteredEvents.length;
-      document.getElementById('stat-total-staff').textContent = workers.length;
-
-      // Brand quick summaries
-      document.getElementById('dash-brand-show-items').textContent = items.filter(i => i.brand === 'MASTER SHOW').length;
-      document.getElementById('dash-brand-drinkmy-items').textContent = items.filter(i => i.brand === 'DRINKMY').length;
-      document.getElementById('dash-brand-sportiz-items').textContent = items.filter(i => i.brand === 'SPORTIZ').length;
-      document.getElementById('dash-brand-master-items').textContent = items.filter(i => i.brand === 'MASTER EVENTOS').length;
-
-      // Render upcoming events snippet
-      const container = document.getElementById('dashboard-upcoming-events-list');
-      if (filteredEvents.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-6 text-slate-500 text-xs">
-            No hay eventos agendados para este filtro.
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = filteredEvents.slice(0, 4).map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
-        const brandBadge = getBrandBadgeClass(evt.brand);
-        const itemCount = evt.assignedItems ? evt.assignedItems.reduce((a, b) => a + Number(b.qty || 0), 0) : 0;
-
-        return `
-          <div class="p-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md border ${brandBadge}">${evt.brand}</span>
-                <h4 class="font-bold text-xs text-white">${evt.name}</h4>
-              </div>
-              <p class="text-[11px] text-slate-400 flex items-center gap-3">
-                <span><i class="fa-solid fa-calendar mr-1 text-purple-400"></i>${evt.date}</span>
-                <span><i class="fa-solid fa-location-dot mr-1 text-pink-400"></i>${evt.location}</span>
-              </p>
-            </div>
-
-            <div class="flex items-center gap-3 text-xs border-t sm:border-t-0 border-slate-700/50 pt-2 sm:pt-0">
-              <div class="text-right">
-                <span class="text-slate-300 font-semibold block text-[11px]"><i class="fa-solid fa-user-check text-emerald-400 mr-1"></i>${worker ? worker.name : 'Sin asignar'}</span>
-                <span class="text-slate-400 text-[10px] block">${itemCount} ítems asignados</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* INVENTORY RENDER */
-    function renderInventory() {
-      const searchQuery = (document.getElementById('inventory-search')?.value || '').toLowerCase();
-      const catFilter = document.getElementById('filter-category')?.value || 'ALL';
-      const stockFilter = document.getElementById('filter-stock')?.value || 'ALL';
-
-      const grid = document.getElementById('inventory-grid');
-
-      const filtered = items.filter(item => {
-        const matchBrand = currentBrandFilter === 'ALL' || item.brand === currentBrandFilter;
-        const matchCat = catFilter === 'ALL' || item.category === catFilter;
-        const matchSearch = item.name.toLowerCase().includes(searchQuery) ||
-                            (item.notes && item.notes.toLowerCase().includes(searchQuery)) ||
-                            (item.size && item.size.toLowerCase().includes(searchQuery));
-
-        const occupied = getItemOccupiedQty(item.id);
-        const matchStock = stockFilter === 'ALL' ||
-                          (stockFilter === 'AVAILABLE' && (item.quantity - occupied) > 0) ||
-                          (stockFilter === 'IN_USE' && occupied > 0);
-
-        return matchBrand && matchCat && matchSearch && matchStock;
-      });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-500">
-            <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-600 block"></i>
-            <p class="text-sm font-medium">No se encontraron artículos con los filtros aplicados.</p>
-            <button onclick="openModal('modal-item')" class="mt-3 text-xs text-purple-400 hover:underline">Registrar nuevo artículo</button>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(item => {
-        const occupied = getItemOccupiedQty(item.id);
-        const available = Math.max(0, item.quantity - occupied);
-        const brandBadge = getBrandBadgeClass(item.brand);
-
-        const imgPlaceholder = `https://placehold.co/400x250/1e293b/a855f7?text=${encodeURIComponent(item.name)}`;
-
-        return `
-          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition-all flex flex-col group">
-
-            <!-- Item Photo Header -->
-            <div class="relative h-36 bg-slate-800 overflow-hidden">
-              <img src="${item.photo || imgPlaceholder}" onerror="this.src='${imgPlaceholder}'" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
-
-              <span class="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-extrabold rounded-md border backdrop-blur-md ${brandBadge}">
-                ${item.brand}
-              </span>
-
-              <div class="absolute bottom-2 left-3 right-3 flex items-center justify-between">
-                <span class="text-[10px] font-medium text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-md backdrop-blur-sm">
-                  ${item.category}
-                </span>
-              </div>
-            </div>
-
-            <!-- Card Body -->
-            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
-              <div>
-                <h3 class="font-bold text-sm text-white line-clamp-1 group-hover:text-purple-400 transition-colors">${item.name}</h3>
-
-                <div class="flex flex-wrap gap-2 mt-2 text-[11px] text-slate-400">
-                  ${item.size ? `<span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Talla: <b class="text-slate-200">${item.size}</b></span>` : ''}
-                  ${item.color ? `<span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Color: <b class="text-slate-200">${item.color}</b></span>` : ''}
-                </div>
-
-                ${item.notes ? `<p class="text-[11px] text-slate-400 italic mt-2 line-clamp-2">${item.notes}</p>` : ''}
-              </div>
-
-              <!-- Stock Availability Meter -->
-              <div class="pt-2 border-t border-slate-800/80 space-y-1.5">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="text-slate-400">Disponibilidad:</span>
-                  <span class="font-bold text-white">${available} / ${item.quantity} un.</span>
-                </div>
-
-                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
-                  <div class="bg-emerald-500 h-full" style="width: ${(available / item.quantity) * 100}%"></div>
-                  <div class="bg-amber-500 h-full" style="width: ${(occupied / item.quantity) * 100}%"></div>
-                </div>
-
-                <div class="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
-                  <span class="text-emerald-400">${available} Libres</span>
-                  <span class="text-amber-400">${occupied} Ocupadas</span>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="flex items-center justify-end gap-1.5 pt-1">
-                <button onclick="editItem('${item.id}')" class="p-2 rounded-lg bg-slate-800 hover:bg-purple-600/20 text-slate-300 hover:text-purple-400 text-xs transition-colors" title="Editar">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-slate-800 hover:bg-rose-600/20 text-slate-300 hover:text-rose-400 text-xs transition-colors" title="Eliminar">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* EVENTS RENDER */
-    function renderEvents() {
-      const container = document.getElementById('events-list-container');
-      const filtered = currentBrandFilter === 'ALL' ? events : events.filter(e => e.brand === currentBrandFilter);
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="glass-card p-12 text-center text-slate-500 rounded-2xl">
-            <i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-600 block"></i>
-            <p class="text-sm font-medium">No hay eventos agendados para esta selección.</p>
-            <button onclick="openModal('modal-event')" class="mt-3 text-xs text-pink-400 hover:underline">+ Crear un evento ahora</button>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = filtered.map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
-        const brandBadge = getBrandBadgeClass(evt.brand);
-
-        const assignedItemsList = (evt.assignedItems || []).map(ai => {
-          const item = items.find(i => i.id === ai.itemId);
-          if (!item) return '';
-          return `
-            <div class="flex items-center justify-between bg-slate-900/60 p-2 rounded-lg text-xs border border-slate-800">
-              <span class="text-slate-200 font-medium">${item.name} (${item.brand})</span>
-              <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold">${ai.qty} un.</span>
-            </div>
-          `;
-        }).join('');
-
-        return `
-          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md border ${brandBadge}">${evt.brand}</span>
-                  <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${evt.date}</span>
-                </div>
-                <h3 class="text-base font-extrabold text-white">${evt.name}</h3>
-              </div>
-
-              <div class="flex items-center gap-2 self-end sm:self-auto">
-                <button onclick="editEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200">
-                  <i class="fa-solid fa-pen-to-square mr-1"></i> Editar
-                </button>
-                <button onclick="deleteEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-xs font-semibold text-rose-400">
-                  <i class="fa-solid fa-trash mr-1"></i> Eliminar
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Location & Responsable -->
-              <div class="space-y-2">
-                <div class="flex items-center gap-2 text-xs text-slate-300">
-                  <i class="fa-solid fa-location-dot w-5 text-pink-400 text-center"></i>
-                  <span><b>Ubicación:</b> ${evt.location}</span>
-                </div>
-
-                <div class="flex items-center gap-2 text-xs text-slate-300">
-                  <i class="fa-solid fa-user-shield w-5 text-emerald-400 text-center"></i>
-                  <span><b>Responsable Cargo:</b> ${worker ? `${worker.name} (${worker.role})` : 'Sin asignar'}</span>
-                </div>
-
-                ${worker && worker.phone ? `
-                  <div class="flex items-center gap-2 text-xs text-slate-400 pl-7">
-                    <i class="fa-solid fa-phone text-[10px]"></i>
-                    <span>${worker.phone}</span>
-                  </div>
-                ` : ''}
-              </div>
-
-              <!-- Assigned Items -->
-              <div>
-                <h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5">
-                  <i class="fa-solid fa-boxes-packing text-purple-400"></i> Inventario Reservado:
-                </h4>
-                <div class="space-y-1.5 max-h-36 overflow-y-auto">
-                  ${assignedItemsList || '<p class="text-xs text-slate-500 italic">No hay ítems asignados.</p>'}
-                </div>
-              </div>
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* CALENDAR RENDER */
-    function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-
-      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-      document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const totalDays = new Date(year, month + 1, 0).getDate();
-
-      const grid = document.getElementById('calendar-days-grid');
-      grid.innerHTML = '';
-
-      // Blank padded days
-      for (let i = 0; i < firstDayIndex; i++) {
-        grid.innerHTML += `<div class="h-20 sm:h-24 bg-slate-900/30 rounded-xl border border-slate-800/40 opacity-40"></div>`;
-      }
-
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      // Render actual days
-      for (let day = 1; day <= totalDays; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayEvents = events.filter(e => e.date === dateStr && (currentBrandFilter === 'ALL' || e.brand === currentBrandFilter));
-
-        const isToday = todayStr === dateStr;
-        const isSelected = selectedCalendarDateStr === dateStr;
-
-        grid.innerHTML += `
-          <div onclick="selectCalendarDate('${dateStr}')" class="h-20 sm:h-24 p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
-            isSelected ? 'border-purple-500 bg-purple-500/10' :
-            isToday ? 'border-pink-500/80 bg-slate-800/80' : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
-          }">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold ${isToday ? 'text-pink-400' : 'text-slate-300'}">${day}</span>
-              ${dayEvents.length > 0 ? `<span class="w-2 h-2 rounded-full bg-purple-400"></span>` : ''}
-            </div>
-
-            <div class="space-y-1 overflow-y-auto max-h-14 scrollbar-none">
-              ${dayEvents.map(e => `
-                <div class="text-[9px] font-medium px-1.5 py-0.5 rounded bg-purple-600/30 text-purple-200 border border-purple-500/20 truncate" title="${e.name}">
-                  ${e.name}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    function changeMonth(delta) {
-      currentDate.setMonth(currentDate.getMonth() + delta);
-      renderCalendar();
-    }
-
-    function jumpToToday() {
-      currentDate = new Date();
-      selectedCalendarDateStr = currentDate.toISOString().split('T')[0];
-      renderCalendar();
-      selectCalendarDate(selectedCalendarDateStr);
-    }
-
-    function selectCalendarDate(dateStr) {
-      selectedCalendarDateStr = dateStr;
-      renderCalendar();
-
-      const detailsContainer = document.getElementById('calendar-day-details');
-      const titleSpan = document.getElementById('selected-date-title');
-      const eventsList = document.getElementById('calendar-day-events-list');
-
-      titleSpan.textContent = dateStr;
-      detailsContainer.classList.remove('hidden');
-
-      const dayEvents = events.filter(e => e.date === dateStr && (currentBrandFilter === 'ALL' || e.brand === currentBrandFilter));
-
-      if (dayEvents.length === 0) {
-        eventsList.innerHTML = `<p class="text-xs text-slate-500 italic">Sin eventos registrados para este día.</p>`;
-        return;
-      }
-
-      eventsList.innerHTML = dayEvents.map(evt => {
-        const worker = workers.find(w => w.id === evt.workerId);
-        return `
-          <div class="p-3 rounded-xl bg-slate-800 border border-slate-700 flex justify-between items-center text-xs">
-            <div>
-              <span class="text-pink-400 font-bold block">${evt.brand} - ${evt.name}</span>
-              <span class="text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${evt.location}</span>
-            </div>
-            <div class="text-right">
-              <span class="text-slate-200 font-semibold block">${worker ? worker.name : 'Sin Responsable'}</span>
-              <span class="text-purple-400 text-[10px]">${(evt.assignedItems || []).length} tipos de ítems</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* WORKERS RENDER */
-    function renderWorkers() {
-      const grid = document.getElementById('workers-grid');
-      const filtered = currentBrandFilter === 'ALL' ? workers : workers.filter(w => w.brand === 'TODAS' || w.brand === currentBrandFilter);
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-500">
-            <i class="fa-solid fa-users-slash text-4xl mb-3 text-slate-600 block"></i>
-            <p class="text-sm">No hay miembros registrados para esta marca.</p>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(wrk => {
-        // Find assigned events for this worker
-        const assignedEvents = events.filter(e => e.workerId === wrk.id);
-
-        return `
-          <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
-            <button onclick="deleteWorker('${wrk.id}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors text-xs">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-lg">
-                ${wrk.name.charAt(0)}
-              </div>
-              <div>
-                <h3 class="font-bold text-sm text-white">${wrk.name}</h3>
-                <p class="text-xs text-emerald-400">${wrk.role}</p>
-              </div>
-            </div>
-
-            <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800">
-              <p><i class="fa-solid fa-phone w-4 text-slate-500"></i> ${wrk.phone || 'Sin número'}</p>
-              <p><i class="fa-solid fa-tag w-4 text-slate-500"></i> Área: ${wrk.brand}</p>
-            </div>
-
-            <div class="pt-2">
-              <span class="text-[11px] font-bold text-slate-400 block mb-1">Eventos Asignados (${assignedEvents.length}):</span>
-              <div class="space-y-1">
-                ${assignedEvents.map(e => `
-                  <span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] border border-slate-700 mr-1 mb-1">
-                    ${e.name}
-                  </span>
-                `).join('') || '<span class="text-[10px] text-slate-500 italic">Ningún evento asignado.</span>'}
-              </div>
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* MODAL HELPERS */
-    function openModal(modalId) {
-      document.getElementById(modalId).classList.remove('hidden');
-      if (modalId === 'modal-event') populateWorkerSelects();
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.add('hidden');
-    }
-
-    /* POPULATE WORKERS SELECT IN EVENT FORM */
-    function populateWorkerSelects() {
-      const select = document.getElementById('event-worker');
-      if (!select) return;
-
-      select.innerHTML = workers.map(w => `<option value="${w.id}">${w.name} - ${w.role}</option>`).join('');
-
-      // Populate Inventory Items Assigner in Event Form
-      const assigner = document.getElementById('event-inventory-assigner');
-      if (assigner) {
-        assigner.innerHTML = items.map(item => `
-          <div class="flex items-center justify-between text-xs py-1 border-b border-slate-900">
-            <span class="text-slate-300">${item.name} (${item.brand})</span>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] text-slate-500">Stock: ${item.quantity}</span>
-              <input type="number" min="0" max="${item.quantity}" value="0" data-item-id="${item.id}" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500">
-            </div>
-          </div>
-        `).join('');
-      }
-    }
-
-    /* SAVE ITEM */
-    function saveItem(e) {
-      e.preventDefault();
-      const id = document.getElementById('item-id').value;
-
-      const itemData = {
-        id: id || 'itm-' + Date.now(),
-        name: document.getElementById('item-name').value,
-        brand: document.getElementById('item-brand').value,
-        category: document.getElementById('item-category').value,
-        quantity: Number(document.getElementById('item-quantity').value || 1),
-        size: document.getElementById('item-size').value,
-        color: document.getElementById('item-color').value,
-        photo: document.getElementById('item-photo').value,
-        notes: document.getElementById('item-notes').value
-      };
-
-      if (id) {
-        const index = items.findIndex(i => i.id === id);
-        if (index !== -1) items[index] = itemData;
-      } else {
-        items.push(itemData);
-      }
-
-      saveData();
-      closeModal('modal-item');
-      document.getElementById('form-item').reset();
-    }
-
-    function editItem(id) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-
-      document.getElementById('item-id').value = item.id;
-      document.getElementById('item-name').value = item.name;
-      document.getElementById('item-brand').value = item.brand;
-      document.getElementById('item-category').value = item.category;
-      document.getElementById('item-quantity').value = item.quantity;
-      document.getElementById('item-size').value = item.size || '';
-      document.getElementById('item-color').value = item.color || '';
-      document.getElementById('item-photo').value = item.photo || '';
-      document.getElementById('item-notes').value = item.notes || '';
-
-      document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-purple-400"></i> Editar Artículo`;
-      openModal('modal-item');
-    }
-
-    function deleteItem(id) {
-      if (confirm('¿Estás seguro de eliminar este artículo del inventario?')) {
-        items = items.filter(i => i.id !== id);
-        saveData();
-      }
-    }
-
-    /* SAVE EVENT */
-    function saveEvent(e) {
-      e.preventDefault();
-      const id = document.getElementById('event-id').value;
-
-      // Collect assigned inventory quantities
-      const assignedItems = [];
-      document.querySelectorAll('.event-item-qty').forEach(input => {
-        const qty = Number(input.value || 0);
-        if (qty > 0) {
-          assignedItems.push({
-            itemId: input.dataset.itemId,
-            qty: qty
-          });
-        }
-      });
-
-      const eventData = {
-        id: id || 'evt-' + Date.now(),
-        name: document.getElementById('event-name').value,
-        brand: document.getElementById('event-brand').value,
-        date: document.getElementById('event-date').value,
-        location: document.getElementById('event-location').value,
-        workerId: document.getElementById('event-worker').value,
-        assignedItems: assignedItems
-      };
-
-      if (id) {
-        const index = events.findIndex(evt => evt.id === id);
-        if (index !== -1) events[index] = eventData;
-      } else {
-        events.push(eventData);
-      }
-
-      saveData();
-      closeModal('modal-event');
-      document.getElementById('form-event').reset();
-    }
-
-    function editEvent(id) {
-      const evt = events.find(e => e.id === id);
-      if (!evt) return;
-
-      populateWorkerSelects();
-
-      document.getElementById('event-id').value = evt.id;
-      document.getElementById('event-name').value = evt.name;
-      document.getElementById('event-brand').value = evt.brand;
-      document.getElementById('event-date').value = evt.date;
-      document.getElementById('event-location').value = evt.location;
-      document.getElementById('event-worker').value = evt.workerId;
-
-      // Set item quantities
-      if (evt.assignedItems) {
-        evt.assignedItems.forEach(ai => {
-          const input = document.querySelector(`.event-item-qty[data-item-id="${ai.itemId}"]`);
-          if (input) input.value = ai.qty;
-        });
-      }
-
-      document.getElementById('modal-event-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-pink-400"></i> Editar Evento`;
-      openModal('modal-event');
-    }
-
-    function deleteEvent(id) {
-      if (confirm('¿Deseas cancelar y eliminar este evento?')) {
-        events = events.filter(e => e.id !== id);
-        saveData();
-      }
-    }
-
-    /* SAVE WORKER */
-    function saveWorker(e) {
-      e.preventDefault();
-      const newWorker = {
-        id: 'wrk-' + Date.now(),
-        name: document.getElementById('worker-name').value,
-        role: document.getElementById('worker-role').value,
-        phone: document.getElementById('worker-phone').value,
-        brand: document.getElementById('worker-brand').value
-      };
-
-      workers.push(newWorker);
-      saveData();
-      closeModal('modal-worker');
-      document.getElementById('form-worker').reset();
-    }
-
-    function deleteWorker(id) {
-      if (confirm('¿Eliminar este trabajador del registro?')) {
-        workers = workers.filter(w => w.id !== id);
-        saveData();
-      }
-    }
-
-    /* INITIALIZATION ON LOAD */
-    window.onload = function() {
-      // Set today's date in calendar selection
-      selectedCalendarDateStr = currentDate.toISOString().split('T')[0];
-      updateAppUI();
-    };
-  </script>
+  });
+</script>
 </body>
 </html>
