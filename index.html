@@ -170,29 +170,27 @@ const p2=n=>String(n).padStart(2,'0');
 const dstr=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
 const todayStr=()=>dstr(new Date());
 
-/* ---- Datos iniciales ---- */
+/* ---- Datos iniciales (solo los paneles; el resto vive en Firestore) ---- */
 const INITIAL_PANELS=['CABEZONES','TRAJES','LUCES','ROBÓTICAS','BARRA MÓVIL','DEPORTIVO','AUDIO'].map((n,i)=>({id:'pnl-'+(i+1),name:n}));
-const INITIAL_ITEMS=[
-{id:'itm-1',panel:'pnl-5',name:'Barra Ledes Retroiluminada Pro',brand:'DRINKMY',quantity:3,size:'2.5m x 1.1m',color:'RGB Modulable',photo:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80',notes:'Incluye conectores de corriente y dispensadores de hielo.'},
-{id:'itm-2',panel:'pnl-1',name:'Máscaras Neón Gigantes Cabeza Hora Loca',brand:'MASTER SHOW',quantity:12,size:'Ajustable',color:'Multicolor / LED',photo:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',notes:'Requieren pilas AA. Revisar estado tras cada uso.'},
-{id:'itm-3',panel:'pnl-6',name:'Circuito Inflable Obstáculos mañanas deportivas',brand:'SPORTIZ',quantity:2,size:'15m x 4m',color:'Amarillo / Verde',photo:'https://images.unsplash.com/photo-1533561052604-c3beb6d55b8d?auto=format&fit=crop&w=500&q=80',notes:'Incluye 2 turbinas de soplado de 1.5 HP.'},
-{id:'itm-4',panel:'pnl-7',name:'Sistema de Sonido Tri-amplificado 3000W',brand:'MASTER EVENTOS',quantity:4,size:'Estándar',color:'Negro Mate',photo:'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80',notes:'Incluye cables XLR 10m y atriles de elevación.'},
-{id:'itm-5',panel:'pnl-2',name:'Vestuarios de Temática Retro / Disco 80s',brand:'MASTER SHOW',quantity:8,size:'M / L',color:'Dorado y Plateado',photo:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80',notes:'Lavar en seco únicamente. Revisar cierres y lentejuelas.'}];
-const INITIAL_WORKERS=[
-{id:'wrk-1',name:'Mateo Benítez',role:'Jefe de Barra & Coctelería',phone:'+593 99 876 5432',brand:'DRINKMY'},
-{id:'wrk-2',name:'Sofía Guerrero',role:'Coordinadora Hora Loca',phone:'+593 98 765 4321',brand:'MASTER SHOW'},
-{id:'wrk-3',name:'Lucas Valencia',role:'Líder de Logística Deportiva',phone:'+593 97 111 2222',brand:'SPORTIZ'},
-{id:'wrk-4',name:'Andrés Morales',role:'Técnico de Iluminación y Audio',phone:'+593 99 333 4444',brand:'MASTER EVENTOS'}];
-const INITIAL_EVENTS=[
-{id:'evt-1',name:'Boda Matrimonial - Barra VIP & Hora Loca',brand:'DRINKMY',date:'2026-10-15',dateEnd:'2026-10-15',location:'Club Los Chillos, Quito',workerId:'wrk-1',assignedItems:[{itemId:'itm-1',qty:2},{itemId:'itm-2',qty:6}]},
-{id:'evt-2',name:'Mañana Deportiva Colegio Interamericano',brand:'SPORTIZ',date:'2026-10-20',dateEnd:'2026-10-20',location:'Canchas del Parque La Carolina',workerId:'wrk-3',assignedItems:[{itemId:'itm-3',qty:2}]}];
+window.INITIAL_PANELS=INITIAL_PANELS;
 
-const getStored=(k,f)=>{try{const d=localStorage.getItem('master_eventos3_'+k);return d?JSON.parse(d):f}catch(e){return f}};
-let panels=getStored('panels',INITIAL_PANELS),items=getStored('items',INITIAL_ITEMS),workers=getStored('workers',INITIAL_WORKERS),events=getStored('events',INITIAL_EVENTS);
+let panels=[],items=[],workers=[],events=[];
+
 function saveData(){
-  try{['panels','items','workers','events'].forEach(k=>localStorage.setItem('master_eventos3_'+k,JSON.stringify({panels,items,workers,events}[k])))}catch(e){alert('Almacenamiento lleno. Usa fotos más pequeñas.')}
   renderCurrentTab();
+  window.cloudPush && window.cloudPush();
 }
+
+/* Puentes para el módulo de Firebase */
+window.getCol=c=>({panels,items,workers,events})[c];
+window.setCol=(c,a)=>{if(c==='panels')panels=a;else if(c==='items')items=a;else if(c==='workers')workers=a;else events=a};
+let deferredRender=false;
+window.refreshUI=()=>{
+  // Si estás escribiendo en el formulario del inventario, no lo borres con un re-render
+  if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#panels-list')){deferredRender=true;return}
+  renderCurrentTab();
+};
+document.addEventListener('focusout',()=>{if(deferredRender){deferredRender=false;setTimeout(renderCurrentTab,400)}});
 
 /* ---- Disponibilidad por fechas solapadas ---- */
 const endOf=e=>e.dateEnd||e.date;
@@ -449,7 +447,7 @@ drawNav();renderDashboard();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBgCTiU-NGy6rNMofNw5b_1rCyuXFxdqEc",
@@ -466,10 +464,66 @@ const db = getFirestore(app);
 const g = id => document.getElementById(id);
 let registering = false;
 
+/* ---------- Sincronización en tiempo real ---------- */
+const COLS = ['panels','items','workers','events'];
+const last = {panels:new Map(),items:new Map(),workers:new Map(),events:new Map()};
+const ready = {};
+let unsubs = [];
+
+// Normaliza el objeto (claves ordenadas, sin undefined) para comparar cambios
+const norm = v => Array.isArray(v) ? v.map(norm)
+  : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map(k => [k, norm(v[k])])) : v;
+const ser = o => JSON.stringify(norm(o));
+
+function startSync(){
+  if (unsubs.length) return;
+  COLS.forEach(c => {
+    unsubs.push(onSnapshot(collection(db, c), snap => {
+      const arr = [];
+      last[c] = new Map();
+      snap.forEach(d => { const o = { ...d.data(), id: d.id }; arr.push(o); last[c].set(d.id, ser(o)); });
+      window.setCol(c, arr);
+      ready[c] = true;
+      // Primera vez: si no hay paneles en la nube, crea los 7 iniciales
+      if (c === 'panels' && snap.empty && !snap.metadata.fromCache) {
+        const b = writeBatch(db);
+        window.INITIAL_PANELS.forEach(p => b.set(doc(db, 'panels', p.id), { name: p.name }));
+        b.commit().catch(console.error);
+      }
+      window.refreshUI();
+    }, err => { console.error(err); alert('Error de sincronización: ' + err.message); }));
+  });
+}
+function stopSync(){
+  unsubs.forEach(u => u()); unsubs = [];
+  COLS.forEach(c => { ready[c] = false; last[c] = new Map(); window.setCol(c, []); });
+}
+
+// Sube solo lo que cambió o se eliminó
+window.cloudPush = async () => {
+  if (!COLS.every(c => ready[c])) return; // aún no se cargó la nube
+  const b = writeBatch(db); let n = 0;
+  COLS.forEach(c => {
+    const ids = new Set();
+    window.getCol(c).forEach(o => {
+      ids.add(o.id);
+      const s = ser(o);
+      if (last[c].get(o.id) !== s) {
+        const { id, ...rest } = JSON.parse(s);
+        b.set(doc(db, c, o.id), rest); n++;
+      }
+    });
+    last[c].forEach((_, id) => { if (!ids.has(id)) { b.delete(doc(db, c, id)); n++; } });
+  });
+  if (n) { try { await b.commit(); } catch (e) { alert('No se pudo guardar: ' + e.message); } }
+};
+
+/* ---------- Auth (igual que antes + sync) ---------- */
 function showApp(name, role){
   g('auth-modal').classList.add('hidden');
   g('app-content').classList.remove('hidden');
   g('user-display').textContent = name + ' (' + role + ')';
+  startSync();
 }
 
 window.toggleAuthMode = mode => {
@@ -510,8 +564,10 @@ onAuthStateChanged(auth, async user => {
     catch (err) { console.error('Firestore:', err); }
     showApp(d.name, d.role);
   } else {
+    stopSync();
     g('auth-modal').classList.remove('hidden');
     g('app-content').classList.add('hidden');
+    window.refreshUI();
   }
 });
 </script>
