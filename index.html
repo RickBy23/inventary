@@ -24,569 +24,496 @@ tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta
 </head>
 <body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-purple-500 selection:text-white">
 
-<!-- MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
+
+<!-- LOGIN / REGISTRO -->
 <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4">
-  <div class="glass-card max-w-md w-full p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+  <div class="glass-card max-w-md w-full p-8 rounded-3xl shadow-2xl space-y-6">
     <div class="text-center">
       <div class="w-12 h-12 rounded-2xl gradient-brand mx-auto flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-purple-500/30 mb-3">M</div>
       <h2 id="auth-title" class="text-xl font-extrabold text-white">Iniciar Sesión</h2>
       <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Ingresa tus datos para acceder al sistema privado</p>
     </div>
-
-    <!-- Formulario de Iniciar Sesión -->
     <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Correo Electrónico</label>
-        <input type="email" id="login-email" required placeholder="usuario@mastereventos.com" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
-        <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-      </div>
-      <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-900/40 transition-all">Ingresar</button>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Correo</label>
+      <input type="email" id="login-email" required placeholder="usuario@mastereventos.com" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+      <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></div>
+      <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl">Ingresar</button>
       <p class="text-center text-xs text-slate-400">¿No tienes cuenta? <button type="button" onclick="toggleAuthMode('register')" class="text-purple-400 font-bold hover:underline">Registrarse</button></p>
     </form>
-
-    <!-- Formulario de Registro -->
     <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo</label>
-        <input type="text" id="reg-name" required placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Correo Electrónico</label>
-        <input type="email" id="reg-email" required placeholder="usuario@mastereventos.com" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
-        <input type="password" id="reg-password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Cargo / Responsabilidad</label>
-        <select id="reg-role" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          <option value="JEFE MASTER EVENTOS">JEFE MASTER EVENTOS</option>
-          <option value="JEFE MASTER SHOW">JEFE MASTER SHOW</option>
-          <option value="ENCARGADA DE INVENTARIO">ENCARGADA DE INVENTARIO</option>
-        </select>
-      </div>
-      <button type="submit" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-pink-900/40 transition-all">Crear Cuenta</button>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo</label>
+      <input type="text" id="reg-name" required placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Correo Electrónico</label>
+      <input type="email" id="reg-email" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+      <input type="password" id="reg-password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500"></div>
+      <div><label class="block text-xs font-semibold text-slate-300 mb-1">Cargo / Responsabilidad</label>
+      <select id="reg-role" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
+        <option>JEFE MASTER EVENTOS</option><option>JEFE MASTER SHOW</option><option>ENCARGADA DE INVENTARIO</option></select></div>
+      <button type="submit" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl">Crear Cuenta</button>
       <p class="text-center text-xs text-slate-400">¿Ya tienes usuario? <button type="button" onclick="toggleAuthMode('login')" class="text-pink-400 font-bold hover:underline">Iniciar Sesión</button></p>
     </form>
   </div>
 </div>
-
-<!-- CONTENIDO PRINCIPAL DE LA APLICACIÓN -->
-<div id="app-content" class="hidden flex-1 flex flex-col h-full">
-  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3 transition-all">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dashboard')">
-          <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-purple-500/20">M</div>
-          <div>
-            <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">MASTER EVENTOS <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30">PRO</span></h1>
-            <p id="user-display" class="text-xs text-slate-400">Cargando usuario...</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="logout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-right-from-bracket mr-1"></i> Salir</button>
-          <button onclick="toggleMobileNav()" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800"><i class="fa-solid fa-bars text-xl"></i></button>
+<div id="app-content" class="hidden flex-1 flex flex-col min-h-0">
+<header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3 transition-all">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dashboard')">
+        <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-purple-500/20">M</div>
+        <div>
+          <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">MASTER EVENTOS <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30">PRO</span></h1>
+          <p id="user-display" class="text-xs text-slate-400">Cargando...</p>
         </div>
       </div>
-      <div id="brand-filters" class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0"></div>
-      <div class="hidden md:flex items-center gap-2">
-        <button onclick="openEvent()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/30 flex items-center gap-1.5 transition-all"><i class="fa-solid fa-plus"></i> Nuevo Evento</button>
-        <button onclick="openItem()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"><i class="fa-solid fa-box-archive"></i> Nuevo Artículo</button>
-      </div>
+      <div class="flex items-center gap-2"><button onclick="logout()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold"><i class="fa-solid fa-right-from-bracket mr-1"></i> Salir</button><button onclick="toggleMobileNav()" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800"><i class="fa-solid fa-bars text-xl"></i></button></div>
     </div>
-  </header>
+    <div id="brand-filters" class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0"></div>
+    <div class="hidden md:flex items-center gap-2">
+      <button onclick="openEvent()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/30 flex items-center gap-1.5 transition-all"><i class="fa-solid fa-plus"></i> Nuevo Evento</button>
+      <button onclick="openItem()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"><i class="fa-solid fa-box-archive"></i> Nuevo Artículo</button>
+    </div>
+  </div>
+  <div id="mobileNavMenu" class="hidden md:hidden pt-3 border-t border-slate-800 mt-3 flex flex-col gap-2">
+    <div class="grid grid-cols-2 gap-2 pb-2">
+      <button onclick="openEvent();toggleMobileNav()" class="p-2.5 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2"><i class="fa-solid fa-plus"></i> Crear Evento</button>
+      <button onclick="openItem();toggleMobileNav()" class="p-2.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-bold flex items-center justify-center gap-2 border border-slate-700"><i class="fa-solid fa-box-archive"></i> Añadir Ítem</button>
+    </div>
+  </div>
+</header>
 
-  <div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">
-    <aside class="hidden md:flex flex-col w-64 bg-slate-900/50 border-r border-slate-800 p-4 gap-1 select-none">
-      <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menú Principal</div>
-      <div id="side-nav" class="flex flex-col gap-1"></div>
-    </aside>
+<div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">
+  <aside class="hidden md:flex flex-col w-64 bg-slate-900/50 border-r border-slate-800 p-4 gap-1 select-none">
+    <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menú Principal</div>
+    <div id="side-nav" class="flex flex-col gap-1"></div>
+    <div class="mt-auto p-3.5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50">
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-200 mb-1"><i class="fa-solid fa-circle-info text-amber-400"></i> Tip de Control</div>
+      <p class="text-xs text-slate-400 leading-relaxed">Asigna responsables a cada evento para hacer seguimiento directo del vestuario e instrumental entregado.</p>
+    </div>
+  </aside>
 
-    <main class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 md:pb-6">
-      <section id="tab-dashboard" class="tab-content space-y-6"></section>
-      <section id="tab-inventory" class="tab-content hidden space-y-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
-          <div class="flex-1 relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="inventory-search" oninput="renderInventory()" placeholder="Buscar ítem por nombre, notas, talla..." class="w-full pl-10 pr-4 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-          </div>
+  <main class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 md:pb-6">
+    <section id="tab-dashboard" class="tab-content space-y-6"></section>
+
+    <section id="tab-inventory" class="tab-content hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+        <div class="flex-1 relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="inventory-search" oninput="renderInventory()" placeholder="Buscar ítem por nombre, notas, talla..." class="w-full pl-10 pr-4 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500">
+        </div>
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+          <select id="filter-stock" onchange="renderInventory()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-purple-500">
+            <option value="ALL">Todos los Estados</option>
+            <option value="AVAILABLE">Solo Disponibles</option>
+            <option value="IN_USE">Ocupados/En Evento</option>
+          </select>
           <button onclick="openPanelModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold whitespace-nowrap shadow-md flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Nuevo Panel</button>
         </div>
-        <div id="panels-list" class="space-y-4"></div>
-      </section>
-      <section id="tab-events" class="tab-content hidden space-y-6"><div id="events-list-container" class="space-y-4"></div></section>
-      <section id="tab-workers" class="tab-content hidden space-y-6"><div id="workers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div></section>
-    </main>
-  </div>
+      </div>
+      <div id="panels-list" class="space-y-4"></div>
+    </section>
+
+    <section id="tab-events" class="tab-content hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-calendar-lines text-pink-400"></i> Eventos Programados y Ocupación</h2>
+          <p class="text-xs text-slate-400">Asigna personal responsable y reservas de equipos para cada celebración</p>
+        </div>
+        <button onclick="openEvent()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto"><i class="fa-solid fa-plus"></i> Agendar Evento</button>
+      </div>
+      <div id="events-list-container" class="space-y-4"></div>
+    </section>
+
+    <section id="tab-calendar" class="tab-content hidden space-y-6">
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <button onclick="changeMonth(-1)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+            <h2 id="calendar-month-year" class="text-lg font-black text-white min-w-[160px] text-center"></h2>
+            <button onclick="changeMonth(1)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+          </div>
+          <button onclick="jumpToToday()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-semibold border border-slate-700">Hoy</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2"><div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div></div>
+        <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 lg:gap-2"></div>
+      </div>
+      <div id="calendar-day-details" class="glass-card p-5 rounded-2xl hidden">
+        <h3 class="font-bold text-sm text-purple-400 mb-3 flex items-center gap-2"><i class="fa-solid fa-location-dot"></i> Eventos para la fecha seleccionada: <span id="selected-date-title" class="text-white"></span></h3>
+        <div id="calendar-day-events-list" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <section id="tab-workers" class="tab-content hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-id-card text-emerald-400"></i> Registro de Trabajadores y Responsables</h2>
+          <p class="text-xs text-slate-400">Controla quién es responsable de la indumentaria y equipos en cada evento</p>
+        </div>
+        <button onclick="openModal('modal-worker')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto"><i class="fa-solid fa-user-plus"></i> Registrar Trabajador</button>
+      </div>
+      <div id="workers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+  </main>
 </div>
 
+<nav id="mobile-nav" class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5 flex items-center justify-around" style="padding-bottom:calc(.375rem + env(safe-area-inset-bottom,0px))"></nav>
 <div id="modals"></div>
 
-<!-- SDKs de Firebase y Lógica del Sistema -->
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let currentBrandFilter='ALL',currentTab='dashboard',currentDate=new Date(),selectedCalendarDateStr=null;
+const openPanels=new Set(),pendingPhoto={};
+const p2=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const todayStr=()=>dstr(new Date());
+
+/* ---- Datos iniciales ---- */
+const INITIAL_PANELS=['CABEZONES','TRAJES','LUCES','ROBÓTICAS','BARRA MÓVIL','DEPORTIVO','AUDIO'].map((n,i)=>({id:'pnl-'+(i+1),name:n}));
+const INITIAL_ITEMS=[
+{id:'itm-1',panel:'pnl-5',name:'Barra Ledes Retroiluminada Pro',brand:'DRINKMY',quantity:3,size:'2.5m x 1.1m',color:'RGB Modulable',photo:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80',notes:'Incluye conectores de corriente y dispensadores de hielo.'},
+{id:'itm-2',panel:'pnl-1',name:'Máscaras Neón Gigantes Cabeza Hora Loca',brand:'MASTER SHOW',quantity:12,size:'Ajustable',color:'Multicolor / LED',photo:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',notes:'Requieren pilas AA. Revisar estado tras cada uso.'},
+{id:'itm-3',panel:'pnl-6',name:'Circuito Inflable Obstáculos mañanas deportivas',brand:'SPORTIZ',quantity:2,size:'15m x 4m',color:'Amarillo / Verde',photo:'https://images.unsplash.com/photo-1533561052604-c3beb6d55b8d?auto=format&fit=crop&w=500&q=80',notes:'Incluye 2 turbinas de soplado de 1.5 HP.'},
+{id:'itm-4',panel:'pnl-7',name:'Sistema de Sonido Tri-amplificado 3000W',brand:'MASTER EVENTOS',quantity:4,size:'Estándar',color:'Negro Mate',photo:'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=500&q=80',notes:'Incluye cables XLR 10m y atriles de elevación.'},
+{id:'itm-5',panel:'pnl-2',name:'Vestuarios de Temática Retro / Disco 80s',brand:'MASTER SHOW',quantity:8,size:'M / L',color:'Dorado y Plateado',photo:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80',notes:'Lavar en seco únicamente. Revisar cierres y lentejuelas.'}];
+const INITIAL_WORKERS=[
+{id:'wrk-1',name:'Mateo Benítez',role:'Jefe de Barra & Coctelería',phone:'+593 99 876 5432',brand:'DRINKMY'},
+{id:'wrk-2',name:'Sofía Guerrero',role:'Coordinadora Hora Loca',phone:'+593 98 765 4321',brand:'MASTER SHOW'},
+{id:'wrk-3',name:'Lucas Valencia',role:'Líder de Logística Deportiva',phone:'+593 97 111 2222',brand:'SPORTIZ'},
+{id:'wrk-4',name:'Andrés Morales',role:'Técnico de Iluminación y Audio',phone:'+593 99 333 4444',brand:'MASTER EVENTOS'}];
+const INITIAL_EVENTS=[
+{id:'evt-1',name:'Boda Matrimonial - Barra VIP & Hora Loca',brand:'DRINKMY',date:'2026-10-15',dateEnd:'2026-10-15',location:'Club Los Chillos, Quito',workerId:'wrk-1',assignedItems:[{itemId:'itm-1',qty:2},{itemId:'itm-2',qty:6}]},
+{id:'evt-2',name:'Mañana Deportiva Colegio Interamericano',brand:'SPORTIZ',date:'2026-10-20',dateEnd:'2026-10-20',location:'Canchas del Parque La Carolina',workerId:'wrk-3',assignedItems:[{itemId:'itm-3',qty:2}]}];
+
+const getStored=(k,f)=>{try{const d=localStorage.getItem('master_eventos3_'+k);return d?JSON.parse(d):f}catch(e){return f}};
+let panels=getStored('panels',INITIAL_PANELS),items=getStored('items',INITIAL_ITEMS),workers=getStored('workers',INITIAL_WORKERS),events=getStored('events',INITIAL_EVENTS);
+function saveData(){
+  try{['panels','items','workers','events'].forEach(k=>localStorage.setItem('master_eventos3_'+k,JSON.stringify({panels,items,workers,events}[k])))}catch(e){alert('Almacenamiento lleno. Usa fotos más pequeñas.')}
+  renderCurrentTab();
+}
+
+/* ---- Disponibilidad por fechas solapadas ---- */
+const endOf=e=>e.dateEnd||e.date;
+const usedQty=(iid,s,e,ex)=>events.reduce((t,v)=>(v.id===ex||!(v.date<=e&&s<=endOf(v)))?t:t+Number((v.assignedItems||[]).find(i=>i.itemId===iid)?.qty||0),0);
+const freeQty=(it,s,e,ex)=>Math.max(0,it.quantity-usedQty(it.id,s,e,ex));
+const getBrandBadgeClass=b=>({'MASTER SHOW':'bg-pink-500/20 text-pink-300 border-pink-500/30','DRINKMY':'bg-blue-500/20 text-blue-300 border-blue-500/30','SPORTIZ':'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'}[b]||'bg-purple-500/20 text-purple-300 border-purple-500/30');
+const brandOpts=(sel,all)=>(all?['TODAS']:[]).concat(['MASTER EVENTOS','MASTER SHOW','DRINKMY','SPORTIZ']).map(b=>`<option value="${b}" ${b===sel?'selected':''}>${b==='TODAS'?'TODAS / MASTER EVENTOS':b}</option>`).join('');
+const dateLabel=e=>endOf(e)===e.date?e.date:`${e.date} → ${endOf(e)}`;
+
+/* ---- Navegación ---- */
+const TABS=[['dashboard','chart-pie','Panel General','Inicio'],['inventory','boxes-stacked','Inventario / Ítems','Inventario'],['events','calendar-check','Eventos & Ocupación','Eventos'],['calendar','calendar-days','Vista Calendario','Calendario'],['workers','users','Equipo & Personal','Equipo']];
+const BRANDS=[['ALL','Todos','<i class="fa-solid fa-layer-group mr-1.5"></i>'],['MASTER SHOW','MASTER SHOW','<span class="w-2 h-2 rounded-full bg-pink-500 inline-block mr-1.5"></span>'],['DRINKMY','DRINKMY','<span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-1.5"></span>'],['SPORTIZ','SPORTIZ','<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5"></span>']];
+function drawNav(){
+  $('#side-nav').innerHTML=TABS.map(t=>`<button onclick="switchTab('${t[0]}')" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentTab===t[0]?'bg-purple-600/15 text-purple-400 border border-purple-500/30':'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'}"><i class="fa-solid fa-${t[1]} w-5 text-center"></i> ${t[2]}</button>`).join('');
+  $('#mobile-nav').innerHTML=TABS.map(t=>`<button onclick="switchTab('${t[0]}')" class="flex flex-col items-center gap-1 p-2 ${currentTab===t[0]?'text-purple-400':'text-slate-400'}"><i class="fa-solid fa-${t[1]} text-lg"></i><span class="text-[10px] font-medium">${t[3]}</span></button>`).join('');
+  $('#brand-filters').innerHTML=BRANDS.map(b=>`<button onclick="setBrandFilter('${b[0]}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentBrandFilter===b[0]?'bg-purple-600 text-white shadow-sm':'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'}">${b[2]} ${b[1]}</button>`).join('');
+}
+function switchTab(t){currentTab=t;document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));$('#tab-'+t).classList.remove('hidden');drawNav();renderCurrentTab()}
+const toggleMobileNav=()=>$('#mobileNavMenu').classList.toggle('hidden');
+function setBrandFilter(b){currentBrandFilter=b;drawNav();renderCurrentTab()}
+function renderCurrentTab(){({dashboard:renderDashboard,inventory:renderInventory,events:renderEvents,calendar:renderCalendar,workers:renderWorkers})[currentTab]()}
+
+/* ---- Panel general ---- */
+function renderDashboard(){
+  const t=todayStr(),F=currentBrandFilter,fi=F==='ALL'?items:items.filter(i=>i.brand===F),fe=F==='ALL'?events:events.filter(e=>e.brand===F);
+  const units=fi.reduce((a,i)=>a+Number(i.quantity||0),0),inUse=fi.reduce((a,i)=>a+usedQty(i.id,t,t),0);
+  const up=fe.filter(e=>endOf(e)>=t).sort((a,b)=>a.date.localeCompare(b.date));
+  const stat=(c,lbl,val,sub,ic,vc)=>`<div class="glass-card p-4 rounded-2xl border-l-4 border-l-${c}-500 flex items-center justify-between"><div><p class="text-xs text-slate-400 font-medium">${lbl}</p><h3 class="text-2xl font-black ${vc} mt-0.5">${val}</h3><p class="text-[11px] ${vc==='text-white'?'text-purple-400':'text-slate-400'} mt-1">${sub}</p></div><div class="w-11 h-11 rounded-xl bg-${c}-500/10 text-${c}-400 flex items-center justify-center text-xl"><i class="fa-solid fa-${ic}"></i></div></div>`;
+  const bc=(n,c,d,b)=>`<div class="p-3.5 rounded-xl bg-slate-800/70 border border-${c}-500/30 flex items-center justify-between"><div><span class="text-xs font-bold text-${c}-400 block">${n}</span><span class="text-[11px] text-slate-400">${d}</span></div><div class="text-right"><span class="text-sm font-black text-white">${items.filter(i=>i.brand===b).length}</span><span class="text-[10px] text-slate-400 block">ítems</span></div></div>`;
+  $('#tab-dashboard').innerHTML=`
+  <div class="relative overflow-hidden rounded-3xl p-6 lg:p-8 gradient-brand shadow-xl"><div class="relative z-10 max-w-xl">
+    <span class="px-3 py-1 rounded-full bg-black/20 text-white text-xs font-semibold backdrop-blur-md inline-block mb-3">Sistema Interno Integrado</span>
+    <h2 class="text-2xl lg:text-3xl font-black text-white tracking-tight mb-2">¡Hola! Bienvenido a MASTER EVENTOS</h2>
+    <p class="text-white/80 text-sm leading-relaxed mb-4">Controla las existencias de utilería, barras móviles, insumos deportivos y la logística de personal asignado en tiempo real.</p>
+    <div class="flex flex-wrap gap-2"><button onclick="openEvent()" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-bold text-xs shadow-lg hover:bg-slate-100 transition-all">+ Crear Evento</button>
+    <button onclick="openModal('modal-worker')" class="px-4 py-2 rounded-xl bg-black/30 hover:bg-black/40 text-white border border-white/20 font-bold text-xs transition-all">+ Registrar Personal</button></div></div>
+    <i class="fa-solid fa-champagne-glasses absolute -right-6 -bottom-6 text-9xl text-white/10 rotate-12 pointer-events-none"></i></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    ${stat('purple','Total Artículos',fi.length,units+' unidades en stock','boxes-stacked','text-white')}
+    ${stat('amber','Ítems Ocupados',inUse,'En eventos de hoy','hand-holding-box','text-amber-400')}
+    ${stat('pink','Próximos Eventos',up.length,'Agendados activamente','calendar-star','text-pink-400')}
+    ${stat('emerald','Personal Activo',workers.length,'Trabajadores registrados','user-gear','text-emerald-400')}
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800">
+      <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-base text-slate-100 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Eventos Inminentes & Asignación</h3>
+      <button onclick="switchTab('events')" class="text-xs text-purple-400 hover:text-purple-300 font-semibold">Ver todos <i class="fa-solid fa-chevron-right text-[10px]"></i></button></div>
+      <div class="space-y-3">${up.length?up.slice(0,4).map(evt=>{const w=workers.find(x=>x.id===evt.workerId),n=(evt.assignedItems||[]).reduce((a,b)=>a+Number(b.qty||0),0);return`
+      <div class="p-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="space-y-1"><div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] font-bold rounded-md border ${getBrandBadgeClass(evt.brand)}">${evt.brand}</span><h4 class="font-bold text-xs text-white">${esc(evt.name)}</h4></div>
+        <p class="text-[11px] text-slate-400 flex items-center gap-3"><span><i class="fa-solid fa-calendar mr-1 text-purple-400"></i>${dateLabel(evt)}</span><span><i class="fa-solid fa-location-dot mr-1 text-pink-400"></i>${esc(evt.location)}</span></p></div>
+        <div class="flex items-center gap-3 text-xs border-t sm:border-t-0 border-slate-700/50 pt-2 sm:pt-0"><div class="text-right"><span class="text-slate-300 font-semibold block text-[11px]"><i class="fa-solid fa-user-check text-emerald-400 mr-1"></i>${w?esc(w.name):'Sin asignar'}</span><span class="text-slate-400 text-[10px] block">${n} ítems asignados</span></div></div></div>`}).join(''):'<div class="text-center py-6 text-slate-500 text-xs">No hay eventos agendados para este filtro.</div>'}</div>
+    </div>
+    <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
+      <h3 class="font-bold text-base text-slate-100 flex items-center gap-2"><i class="fa-solid fa-sitemap text-pink-400"></i> Estado por Marca</h3>
+      ${bc('MASTER SHOW','pink','Hora Loca, Luces, Vestuarios','MASTER SHOW')}${bc('DRINKMY','blue','Barra Móvil, Coctelería, Utensilios','DRINKMY')}${bc('SPORTIZ','emerald','Mañanas Deportivas, Inflables','SPORTIZ')}${bc('MASTER EVENTOS (General)','purple','Audio, Sonido, Estructuras','MASTER EVENTOS')}
+    </div>
+  </div>`;
+}
+
+/* ---- Inventario en paneles ---- */
+const IC='w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500';
+function togglePanel(id){openPanels.has(id)?openPanels.delete(id):openPanels.add(id);renderInventory()}
+function itemRow(item,t){
+  const occ=usedQty(item.id,t,t),av=Math.max(0,item.quantity-occ);
+  const res=events.filter(e=>endOf(e)>=t&&(e.assignedItems||[]).some(x=>x.itemId===item.id)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3)
+   .map(e=>`<p class="text-[10px] text-amber-300"><i class="fa-solid fa-location-dot mr-1"></i>${dateLabel(e)} · ${esc(e.location)} · ${e.assignedItems.find(x=>x.itemId===item.id).qty} un.</p>`).join('');
+  return`<div class="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
+    <div class="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center text-slate-600 shrink-0">${item.photo?`<img src="${esc(item.photo)}" class="w-full h-full object-cover" onerror="this.remove()">`:'<i class="fa-solid fa-image text-xl"></i>'}</div>
+    <div class="flex-1 min-w-0 space-y-1">
+      <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-sm text-white">${esc(item.name)}</h4><span class="px-2 py-0.5 text-[10px] font-bold rounded-md border ${getBrandBadgeClass(item.brand)}">${item.brand}</span></div>
+      <div class="flex flex-wrap gap-2 text-[11px] text-slate-400">${item.size?`<span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Talla: <b class="text-slate-200">${esc(item.size)}</b></span>`:''}${item.color?`<span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Color: <b class="text-slate-200">${esc(item.color)}</b></span>`:''}</div>
+      ${item.notes?`<p class="text-[11px] text-slate-400 italic">${esc(item.notes)}</p>`:''}${res}</div>
+    <div class="sm:w-44 space-y-1.5"><div class="flex items-center justify-between text-[11px]"><span class="text-slate-400">Libres hoy:</span><span class="font-bold text-white">${av} / ${item.quantity} un.</span></div>
+      <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex"><div class="bg-emerald-500 h-full" style="width:${av/item.quantity*100}%"></div><div class="bg-amber-500 h-full" style="width:${Math.min(occ,item.quantity)/item.quantity*100}%"></div></div>
+      <div class="flex items-center justify-between text-[10px]"><span class="text-emerald-400">${av} Libres</span><span class="text-amber-400">${occ} Ocupadas</span></div></div>
+    <div class="flex items-center justify-end gap-1.5">
+      <button onclick="openItem('${item.id}')" class="p-2 rounded-lg bg-slate-800 hover:bg-purple-600/20 text-slate-300 hover:text-purple-400 text-xs transition-colors" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+      <button onclick="deleteItem('${item.id}')" class="p-2 rounded-lg bg-slate-800 hover:bg-rose-600/20 text-slate-300 hover:text-rose-400 text-xs transition-colors" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
+}
+function renderInventory(){
+  const q=($('#inventory-search').value||'').toLowerCase(),sf=$('#filter-stock').value,t=todayStr(),searching=!!q||sf!=='ALL';
+  const html=panels.map(pn=>{
+    const all=items.filter(i=>i.panel===pn.id&&(currentBrandFilter==='ALL'||i.brand===currentBrandFilter));
+    const list=all.filter(i=>{const occ=usedQty(i.id,t,t);return(!q||(i.name+(i.notes||'')+(i.size||'')+(i.color||'')).toLowerCase().includes(q))&&(sf==='ALL'||(sf==='AVAILABLE'&&i.quantity-occ>0)||(sf==='IN_USE'&&occ>0))});
+    if(searching&&!list.length&&!pn.name.toLowerCase().includes(q))return'';
+    const open=openPanels.has(pn.id)||(searching&&list.length>0),units=all.reduce((a,i)=>a+Number(i.quantity),0);
+    return`<div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+      <div onclick="togglePanel('${pn.id}')" class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-800/40 transition-all">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div><h3 class="font-extrabold text-sm text-white tracking-wide">${esc(pn.name)}</h3><p class="text-[11px] text-slate-400">${all.length} ítems · ${units} unidades</p></div></div>
+        <div class="flex items-center gap-3"><button onclick="event.stopPropagation();deletePanel('${pn.id}')" class="text-slate-500 hover:text-rose-400 transition-colors text-xs" title="Eliminar panel"><i class="fa-solid fa-trash-can"></i></button><i class="fa-solid fa-chevron-${open?'up':'down'} text-slate-400 text-xs"></i></div></div>
+      ${open?`<div class="border-t border-slate-800 p-4 space-y-4">
+        <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3"><p class="text-xs font-bold text-slate-200"><i class="fa-solid fa-plus text-purple-400 mr-1"></i> Agregar ítem a ${esc(pn.name)}</p>
+          <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+            <input id="n-name-${pn.id}" placeholder="Nombre *" class="${IC} col-span-2 md:col-span-2">
+            <input id="n-qty-${pn.id}" type="number" min="1" value="1" title="Unidades" class="${IC}">
+            <input id="n-size-${pn.id}" placeholder="Talla" class="${IC}">
+            <input id="n-color-${pn.id}" placeholder="Color" class="${IC}">
+            <select id="n-brand-${pn.id}" class="${IC}">${brandOpts(currentBrandFilter==='ALL'?'MASTER EVENTOS':currentBrandFilter)}</select>
+            <input id="n-notes-${pn.id}" placeholder="Notas" class="${IC} col-span-2 md:col-span-3">
+            <input id="n-photo-${pn.id}" type="file" accept="image/*" onchange="readPhoto(this,'${pn.id}')" class="${IC} md:col-span-2">
+            <button onclick="addInline('${pn.id}')" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow-md col-span-2 md:col-span-1">Agregar</button></div></div>
+        <div class="space-y-2">${list.length?list.map(i=>itemRow(i,t)).join(''):'<p class="text-center text-xs text-slate-500 py-4">Aún no hay ítems en este panel.</p>'}</div></div>`:''}</div>`}).join('');
+  $('#panels-list').innerHTML=html||`<div class="py-12 text-center text-slate-500"><i class="fa-solid fa-box-open text-4xl mb-3 text-slate-600 block"></i><p class="text-sm font-medium">No hay paneles. Crea uno con «Nuevo Panel».</p></div>`;
+}
+function readPhoto(inp,pid){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);pendingPhoto[pid]=c.toDataURL('image/jpeg',.7)};im.src=r.result};r.readAsDataURL(f)}
+function addInline(pid){
+  const g=k=>$(`#n-${k}-${pid}`).value,name=g('name').trim(),qty=Number(g('qty'));
+  if(!name||qty<1)return alert('Indica el nombre y las unidades.');
+  items.push({id:'itm-'+Date.now(),panel:pid,name,brand:g('brand'),quantity:qty,size:g('size'),color:g('color'),photo:pendingPhoto[pid]||'',notes:g('notes')});
+  delete pendingPhoto[pid];saveData();setTimeout(()=>$(`#n-name-${pid}`)?.focus(),50);
+}
+function deleteItem(id){if(!confirm('¿Estás seguro de eliminar este artículo del inventario?'))return;items=items.filter(i=>i.id!==id);events.forEach(e=>e.assignedItems=(e.assignedItems||[]).filter(a=>a.itemId!==id));saveData()}
+function deletePanel(id){const n=items.filter(i=>i.panel===id).length;if(!confirm(`¿Eliminar este panel${n?` y sus ${n} ítems`:''}?`))return;const ids=items.filter(i=>i.panel===id).map(i=>i.id);items=items.filter(i=>i.panel!==id);panels=panels.filter(p=>p.id!==id);events.forEach(e=>e.assignedItems=(e.assignedItems||[]).filter(a=>!ids.includes(a.itemId)));saveData()}
+
+/* ---- Eventos con checklist ---- */
+function prog(e){const a=e.assignedItems||[],n=a.length*3,d=a.reduce((t,i)=>t+(i.pick?1:0)+(i.deliv?1:0)+(i.ret?1:0),0);return n?Math.round(d/n*100):0}
+function tog(eid,iid,f){const x=events.find(e=>e.id===eid).assignedItems.find(i=>i.itemId===iid);x[f]=!x[f];saveData()}
+function renderEvents(){
+  const c=$('#events-list-container'),L=(currentBrandFilter==='ALL'?events:events.filter(e=>e.brand===currentBrandFilter)).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if(!L.length){c.innerHTML=`<div class="glass-card p-12 text-center text-slate-500 rounded-2xl"><i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-600 block"></i><p class="text-sm font-medium">No hay eventos agendados para esta selección.</p><button onclick="openEvent()" class="mt-3 text-xs text-pink-400 hover:underline">+ Crear un evento ahora</button></div>`;return}
+  c.innerHTML=L.map(evt=>{
+    const w=workers.find(x=>x.id===evt.workerId),pr=prog(evt);
+    const rows=(evt.assignedItems||[]).map(ai=>{const it=items.find(i=>i.id===ai.itemId);if(!it)return'';
+      const cb=(f,l)=>`<label class="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer"><input type="checkbox" class="accent-emerald-500" ${ai[f]?'checked':''} onchange="tog('${evt.id}','${ai.itemId}','${f}')">${l}</label>`;
+      return`<div class="bg-slate-900/60 p-2 rounded-lg text-xs border border-slate-800 space-y-1.5"><div class="flex items-center justify-between"><span class="text-slate-200 font-medium">${esc(it.name)}${it.size?' · '+esc(it.size):''}</span><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold">${ai.qty} un.</span></div><div class="flex flex-wrap gap-x-4 gap-y-1">${cb('pick','Recogido')}${cb('deliv','Entregado')}${cb('ret','Devuelto')}</div></div>`}).join('');
+    return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div><div class="flex items-center gap-2 mb-1"><span class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md border ${getBrandBadgeClass(evt.brand)}">${evt.brand}</span><span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${dateLabel(evt)}</span></div><h3 class="text-base font-extrabold text-white">${esc(evt.name)}</h3></div>
+        <div class="flex items-center gap-2 self-end sm:self-auto"><button onclick="openEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"><i class="fa-solid fa-pen-to-square mr-1"></i> Editar</button>
+        <button onclick="deleteEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-xs font-semibold text-rose-400"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button></div></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2"><div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-location-dot w-5 text-pink-400 text-center"></i><span><b>Ubicación:</b> ${esc(evt.location)}</span></div>
+          <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-user-shield w-5 text-emerald-400 text-center"></i><span><b>Responsable Cargo:</b> ${w?`${esc(w.name)} (${esc(w.role)})`:'Sin asignar'}</span></div>
+          ${w&&w.phone?`<div class="flex items-center gap-2 text-xs text-slate-400 pl-7"><i class="fa-solid fa-phone text-[10px]"></i><span>${esc(w.phone)}</span></div>`:''}
+          ${rows?`<div class="pt-1"><div class="flex justify-between text-[11px] text-slate-400 mb-1"><span>Checklist de montaje</span><span>${pr}%</span></div><div class="h-1.5 bg-slate-800 rounded-full overflow-hidden"><div class="gradient-brand h-full" style="width:${pr}%"></div></div></div>`:''}</div>
+        <div><h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-boxes-packing text-purple-400"></i> Inventario Reservado:</h4><div class="space-y-1.5 max-h-60 overflow-y-auto">${rows||'<p class="text-xs text-slate-500 italic">No hay ítems asignados.</p>'}</div></div>
+      </div></div>`}).join('');
+}
+
+/* ---- Calendario ---- */
+function renderCalendar(){
+  const y=currentDate.getFullYear(),m=currentDate.getMonth(),M=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  $('#calendar-month-year').textContent=`${M[m]} ${y}`;
+  const first=new Date(y,m,1).getDay(),total=new Date(y,m+1,0).getDate(),tds=todayStr();
+  let h='<div class="h-20 sm:h-24 bg-slate-900/30 rounded-xl border border-slate-800/40 opacity-40"></div>'.repeat(first);
+  for(let d=1;d<=total;d++){
+    const ds=`${y}-${p2(m+1)}-${p2(d)}`,E=dayEvents(ds),isT=tds===ds,isS=selectedCalendarDateStr===ds;
+    h+=`<div onclick="selectCalendarDate('${ds}')" class="h-20 sm:h-24 p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${isS?'border-purple-500 bg-purple-500/10':isT?'border-pink-500/80 bg-slate-800/80':'border-slate-800 bg-slate-900/60 hover:border-slate-700'}">
+    <div class="flex items-center justify-between"><span class="text-xs font-bold ${isT?'text-pink-400':'text-slate-300'}">${d}</span>${E.length?'<span class="w-2 h-2 rounded-full bg-purple-400"></span>':''}</div>
+    <div class="space-y-1 overflow-y-auto max-h-14">${E.map(e=>`<div class="text-[9px] font-medium px-1.5 py-0.5 rounded bg-purple-600/30 text-purple-200 border border-purple-500/20 truncate" title="${esc(e.name)}">${esc(e.name)}</div>`).join('')}</div></div>`}
+  $('#calendar-days-grid').innerHTML=h;
+}
+const dayEvents=ds=>events.filter(e=>e.date<=ds&&ds<=endOf(e)&&(currentBrandFilter==='ALL'||e.brand===currentBrandFilter));
+const changeMonth=d=>{currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()+d,1);renderCalendar()};
+function jumpToToday(){currentDate=new Date();selectCalendarDate(todayStr())}
+function selectCalendarDate(ds){
+  selectedCalendarDateStr=ds;renderCalendar();
+  $('#calendar-day-details').classList.remove('hidden');$('#selected-date-title').textContent=ds;
+  const E=dayEvents(ds);
+  $('#calendar-day-events-list').innerHTML=E.length?E.map(evt=>{const w=workers.find(x=>x.id===evt.workerId);return`<div class="p-3 rounded-xl bg-slate-800 border border-slate-700 flex justify-between items-center text-xs"><div><span class="text-pink-400 font-bold block">${evt.brand} - ${esc(evt.name)}</span><span class="text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${esc(evt.location)}</span></div><div class="text-right"><span class="text-slate-200 font-semibold block">${w?esc(w.name):'Sin Responsable'}</span><span class="text-purple-400 text-[10px]">${(evt.assignedItems||[]).length} tipos de ítems</span></div></div>`}).join(''):'<p class="text-xs text-slate-500 italic">Sin eventos registrados para este día.</p>';
+}
+
+/* ---- Equipo ---- */
+function renderWorkers(){
+  const L=currentBrandFilter==='ALL'?workers:workers.filter(w=>w.brand==='TODAS'||w.brand===currentBrandFilter);
+  $('#workers-grid').innerHTML=L.length?L.map(w=>{const A=events.filter(e=>e.workerId===w.id);return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
+    <button onclick="deleteWorker('${w.id}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors text-xs"><i class="fa-solid fa-trash-can"></i></button>
+    <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-lg">${esc(w.name.charAt(0))}</div><div><h3 class="font-bold text-sm text-white">${esc(w.name)}</h3><p class="text-xs text-emerald-400">${esc(w.role)}</p></div></div>
+    <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800"><p><i class="fa-solid fa-phone w-4 text-slate-500"></i> ${esc(w.phone)||'Sin número'}</p><p><i class="fa-solid fa-tag w-4 text-slate-500"></i> Área: ${w.brand}</p></div>
+    <div class="pt-2"><span class="text-[11px] font-bold text-slate-400 block mb-1">Eventos Asignados (${A.length}):</span><div class="space-y-1">${A.map(e=>`<span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] border border-slate-700 mr-1 mb-1">${esc(e.name)}</span>`).join('')||'<span class="text-[10px] text-slate-500 italic">Ningún evento asignado.</span>'}</div></div></div>`}).join(''):'<div class="col-span-full py-12 text-center text-slate-500"><i class="fa-solid fa-users-slash text-4xl mb-3 text-slate-600 block"></i><p class="text-sm">No hay miembros registrados para esta marca.</p></div>';
+}
+function deleteWorker(id){if(confirm('¿Eliminar este trabajador del registro?')){workers=workers.filter(w=>w.id!==id);saveData()}}
+function deleteEvent(id){if(confirm('¿Deseas cancelar y eliminar este evento?')){events=events.filter(e=>e.id!==id);saveData()}}
+
+/* ---- Modales ---- */
+const fld=(l,h,c='')=>`<div class="${c}"><label class="block text-xs font-semibold text-slate-300 mb-1">${l}</label>${h}</div>`;
+function showModal(id,w,title,body){
+  $('#modals').innerHTML=`<div id="${id}" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"><div class="bg-slate-900 border border-slate-800 rounded-3xl ${w} w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative"><button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button><h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">${title}</h3>${body}</div></div>`;
+}
+const closeModal=()=>$('#modals').innerHTML='';
+const actions=(c,l)=>`<div class="flex justify-end gap-2 pt-3 border-t border-slate-800"><button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button><button type="submit" class="px-5 py-2 ${c} text-white text-xs font-bold rounded-xl shadow-md">${l}</button></div>`;
+function openModal(id){if(id==='modal-worker')openWorker()}
+
+function openPanelModal(){
+  showModal('modal-panel','max-w-sm','<i class="fa-solid fa-boxes-stacked text-purple-400"></i> Nuevo Panel',`<form onsubmit="savePanel(event)" class="space-y-4">${fld('Nombre del panel *',`<input id="panel-name" required placeholder="Ej: CABEZONES, TRAJES, LUCES, ROBÓTICAS" class="${IC}">`)}${actions('bg-purple-600 hover:bg-purple-500','Crear Panel')}</form>`);
+}
+function savePanel(e){e.preventDefault();const n=$('#panel-name').value.trim().toUpperCase();if(!n)return;const id='pnl-'+Date.now();panels.push({id,name:n});openPanels.add(id);closeModal();saveData()}
+
+function openItem(id){
+  if(!panels.length)return alert('Primero crea un panel en Inventario.');
+  const i=items.find(x=>x.id===id)||{quantity:1,brand:'MASTER EVENTOS',panel:[...openPanels][0]||panels[0].id};
+  showModal('modal-item','max-w-lg',`<i class="fa-solid fa-${id?'pen-to-square':'box'} text-purple-400"></i> ${id?'Editar Artículo':'Registrar Nuevo Artículo'}`,`<form onsubmit="saveItem(event,'${id||''}')" class="space-y-4">
+    ${fld('Nombre del Artículo *',`<input id="item-name" required value="${esc(i.name)}" class="${IC}">`)}
+    <div class="grid grid-cols-2 gap-3">${fld('Panel *',`<select id="item-panel" class="${IC}">${panels.map(p=>`<option value="${p.id}" ${p.id===i.panel?'selected':''}>${esc(p.name)}</option>`).join('')}</select>`)}${fld('Marca / Sub-empresa *',`<select id="item-brand" class="${IC}">${brandOpts(i.brand)}</select>`)}</div>
+    <div class="grid grid-cols-3 gap-3">${fld('Unidades *',`<input type="number" id="item-quantity" min="1" required value="${i.quantity}" class="${IC}">`)}${fld('Talla (Opcional)',`<input id="item-size" value="${esc(i.size)}" class="${IC}">`)}${fld('Color / Tono',`<input id="item-color" value="${esc(i.color)}" class="${IC}">`)}</div>
+    ${fld('Fotografía (URL o subir archivo)',`<input type="url" id="item-photo" value="${i.photo&&!i.photo.startsWith('data:')?esc(i.photo):''}" placeholder="https://ejemplo.com/imagen.jpg" class="${IC}"><input type="file" accept="image/*" onchange="readPhoto(this,'modal')" class="${IC} mt-2">`)}
+    ${fld('Notas / Detalles adicionales',`<textarea id="item-notes" rows="2" class="${IC}">${esc(i.notes)}</textarea>`)}${actions('bg-purple-600 hover:bg-purple-500','Guardar Artículo')}</form>`);
+  if(i.photo&&i.photo.startsWith('data:'))pendingPhoto.modal=i.photo;
+}
+function saveItem(e,id){
+  e.preventDefault();
+  const o={id:id||'itm-'+Date.now(),panel:$('#item-panel').value,name:$('#item-name').value,brand:$('#item-brand').value,quantity:Number($('#item-quantity').value||1),size:$('#item-size').value,color:$('#item-color').value,photo:$('#item-photo').value||pendingPhoto.modal||'',notes:$('#item-notes').value};
+  delete pendingPhoto.modal;
+  id?items[items.findIndex(i=>i.id===id)]=o:items.push(o);
+  openPanels.add(o.panel);closeModal();saveData();
+}
+
+function openWorker(){
+  showModal('modal-worker','max-w-md','<i class="fa-solid fa-user-plus text-emerald-400"></i> Registrar Trabajador',`<form onsubmit="saveWorker(event)" class="space-y-4">
+  ${fld('Nombre Completo *',`<input id="worker-name" required placeholder="Ej: Carlos Mendoza" class="${IC.replace('purple','emerald')}">`)}
+  <div class="grid grid-cols-2 gap-3">${fld('Rol / Cargo *',`<input id="worker-role" required placeholder="Ej: Bartender / Animador" class="${IC.replace('purple','emerald')}">`)}${fld('Teléfono / Celular',`<input type="tel" id="worker-phone" placeholder="+593 99 123 4567" class="${IC.replace('purple','emerald')}">`)}</div>
+  ${fld('Sub-marca Principal',`<select id="worker-brand" class="${IC.replace('purple','emerald')}">${brandOpts('TODAS',true)}</select>`)}${actions('bg-emerald-600 hover:bg-emerald-500','Registrar')}</form>`);
+}
+function saveWorker(e){e.preventDefault();workers.push({id:'wrk-'+Date.now(),name:$('#worker-name').value,role:$('#worker-role').value,phone:$('#worker-phone').value,brand:$('#worker-brand').value});closeModal();saveData()}
+
+function openEvent(id){
+  if(!workers.length)return alert('Primero registra al menos un trabajador.');
+  if(!items.length)return alert('Primero agrega ítems al inventario.');
+  const e=events.find(x=>x.id===id)||{date:todayStr(),dateEnd:todayStr(),brand:'MASTER EVENTOS',assignedItems:[]},PC=IC.replace('purple','pink');
+  showModal('modal-event','max-w-xl',`<i class="fa-solid fa-${id?'pen-to-square':'calendar-plus'} text-pink-400"></i> ${id?'Editar Evento':'Registrar & Agendar Evento'}`,`<form onsubmit="saveEvent(event,'${id||''}')" class="space-y-4">
+  ${fld('Nombre o Título del Evento *',`<input id="event-name" required value="${esc(e.name)}" placeholder="Ej: Boda López - Hora Loca & Barra" class="${PC}">`)}
+  <div class="grid grid-cols-2 gap-3">${fld('Sub-marca Encargada *',`<select id="event-brand" class="${PC}">${brandOpts(e.brand)}</select>`)}${fld('Trabajador Responsable *',`<select id="event-worker" class="${PC}">${workers.map(w=>`<option value="${w.id}" ${w.id===e.workerId?'selected':''}>${esc(w.name)} - ${esc(w.role)}</option>`).join('')}</select>`)}</div>
+  <div class="grid grid-cols-2 gap-3">${fld('Fecha de inicio *',`<input type="date" id="event-date" required value="${e.date}" onchange="if($('#event-end').value<this.value)$('#event-end').value=this.value;refreshAvail('${id||''}')" class="${PC}">`)}${fld('Fecha de fin *',`<input type="date" id="event-end" required value="${endOf(e)}" onchange="refreshAvail('${id||''}')" class="${PC}">`)}</div>
+  ${fld('Lugar / Ubicación del Evento *',`<input id="event-location" required value="${esc(e.location)}" placeholder="Ej: Salón Villa Real" class="${PC}">`)}
+  ${fld('Asignar Ítems de Inventario (máximo = unidades libres en esas fechas)',`<div class="space-y-3 max-h-56 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${panels.map(pn=>{const L=items.filter(i=>i.panel===pn.id);return L.length?`<div><p class="text-[10px] font-bold text-purple-400 mb-1">${esc(pn.name)}</p>${L.map(i=>`<div class="flex items-center justify-between text-xs py-1 border-b border-slate-900"><span class="text-slate-300">${esc(i.name)}<span class="block text-[10px]" data-av="${i.id}"></span></span><input type="number" min="0" value="${(e.assignedItems||[]).find(a=>a.itemId===i.id)?.qty||0}" data-item-id="${i.id}" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500"></div>`).join('')}</div>`:''}).join('')}</div>`)}
+  ${actions('bg-pink-600 hover:bg-pink-500','Guardar Evento')}</form>`);
+  refreshAvail(id||'');
+}
+function refreshAvail(id){
+  const s=$('#event-date').value,en=$('#event-end').value;
+  items.forEach(i=>{const f=freeQty(i,s,en,id),el=document.querySelector(`[data-av="${i.id}"]`),inp=document.querySelector(`[data-item-id="${i.id}"]`);if(!el)return;el.innerHTML=f?`<span class="text-emerald-400">${f} libres</span> de ${i.quantity}`:'<span class="text-rose-400">Sin stock en esas fechas</span>';inp.max=f});
+}
+function saveEvent(ev,id){
+  ev.preventDefault();
+  const s=$('#event-date').value,en=$('#event-end').value,old=(events.find(x=>x.id===id)||{}).assignedItems||[];
+  if(en<s)return alert('La fecha final es anterior a la inicial.');
+  const assigned=[];
+  for(const inp of document.querySelectorAll('.event-item-qty')){
+    const q=Number(inp.value||0);if(q<=0)continue;
+    const it=items.find(i=>i.id===inp.dataset.itemId),f=freeQty(it,s,en,id);
+    if(q>f)return alert(`«${it.name}»: solo hay ${f} unidades libres en esas fechas.`);
+    const o=old.find(a=>a.itemId===it.id)||{};assigned.push({itemId:it.id,qty:q,pick:!!o.pick,deliv:!!o.deliv,ret:!!o.ret});
+  }
+  const o={id:id||'evt-'+Date.now(),name:$('#event-name').value,brand:$('#event-brand').value,date:s,dateEnd:en,location:$('#event-location').value,workerId:$('#event-worker').value,assignedItems:assigned};
+  id?events[events.findIndex(x=>x.id===id)]=o:events.push(o);
+  closeModal();saveData();
+}
+
+selectedCalendarDateStr=todayStr();
+drawNav();renderDashboard();
+</script>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    onSnapshot
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBgCTiU-NGy6rNMofNw5b_1rCyuXFxdqEc",
-    authDomain: "inventario-master-eventos.firebaseapp.com",
-    projectId: "inventario-master-eventos",
-    storageBucket: "inventario-master-eventos.firebasestorage.app",
-    messagingSenderId: "366733726373",
-    appId: "1:366733726373:web:5c11a73d2568936780734c",
-    measurementId: "G-L8107NBY2X"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBgCTiU-NGy6rNMofNw5b_1rCyuXFxdqEc",
+  authDomain: "inventario-master-eventos.firebaseapp.com",
+  projectId: "inventario-master-eventos",
+  storageBucket: "inventario-master-eventos.firebasestorage.app",
+  messagingSenderId: "366733726373",
+  appId: "1:366733726373:web:5c11a73d2568936780734c",
+  measurementId: "G-L8107NBY2X"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const g = id => document.getElementById(id);
+let registering = false;
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+function showApp(name, role){
+  g('auth-modal').classList.add('hidden');
+  g('app-content').classList.remove('hidden');
+  g('user-display').textContent = name + ' (' + role + ')';
+}
 
-  let currentUserData = null;
+window.toggleAuthMode = mode => {
+  const reg = mode === 'register';
+  g('form-login').classList.toggle('hidden', reg);
+  g('form-register').classList.toggle('hidden', !reg);
+  g('auth-title').textContent = reg ? 'Crear Usuario' : 'Iniciar Sesión';
+  g('auth-subtitle').textContent = reg ? 'Registra tus datos y asigna tu cargo' : 'Ingresa tus datos para acceder al sistema privado';
+};
 
-  // Estado Global de la App
-  window.BRANDS = [
-    { id: 'all', name: 'Todas', color: 'bg-slate-700' },
-    { id: 'master', name: 'Master Eventos', color: 'bg-purple-600' },
-    { id: 'show', name: 'Master Show', color: 'bg-pink-600' },
-    { id: 'drinkmy', name: 'DrinkMy', color: 'bg-blue-600' },
-    { id: 'sportiz', name: 'Sportiz', color: 'bg-emerald-600' }
-  ];
+window.handleRegister = async e => {
+  e.preventDefault();
+  const name = g('reg-name').value.trim(), email = g('reg-email').value.trim(), role = g('reg-role').value;
+  registering = true;
+  try {
+    const res = await createUserWithEmailAndPassword(auth, email, g('reg-password').value);
+    try { await setDoc(doc(db, 'users', res.user.uid), { name, email, role, createdAt: new Date() }); }
+    catch (err) { console.error('Firestore:', err); }
+    showApp(name, role);
+  } catch (err) {
+    alert('Error al registrar: ' + err.message);
+  } finally { registering = false; }
+};
 
-  window.activeBrand = 'all';
-  window.activeTab = 'dashboard';
+window.handleLogin = async e => {
+  e.preventDefault();
+  try { await signInWithEmailAndPassword(auth, g('login-email').value.trim(), g('login-password').value); }
+  catch (err) { console.error(err); alert('Error al iniciar sesión: verifica el correo o la contraseña.'); }
+};
 
-  window.panels = [];
-  window.items = [];
-  window.workers = [];
-  window.events = [];
+window.logout = () => signOut(auth);
 
-  // Sincronización en tiempo real con Firestore
-  function initFirestoreSync() {
-    onSnapshot(doc(db, "appData", "master_store"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        window.panels = data.panels || [];
-        window.items = data.items || [];
-        window.workers = data.workers || [];
-        window.events = data.events || [];
-      } else {
-        // Datos por defecto si la BD está vacía
-        window.panels = [{ id: 'p1', name: 'Electrónica y Sonido', brand: 'master' }];
-        window.items = [];
-        window.workers = [];
-        window.events = [];
-        saveData();
-      }
-      renderCurrentTab();
-    }, (error) => {
-      console.error("Error sincronizando Firebase:", error);
-    });
+onAuthStateChanged(auth, async user => {
+  if (registering) return;
+  if (user) {
+    let d = { name: user.email, role: 'USUARIO' };
+    try { const s = await getDoc(doc(db, 'users', user.uid)); if (s.exists()) d = s.data(); }
+    catch (err) { console.error('Firestore:', err); }
+    showApp(d.name, d.role);
+  } else {
+    g('auth-modal').classList.remove('hidden');
+    g('app-content').classList.add('hidden');
   }
-
-  // Guardar datos en la nube
-  window.saveData = async () => {
-    try {
-      await setDoc(doc(db, "appData", "master_store"), {
-        panels: window.panels,
-        items: window.items,
-        workers: window.workers,
-        events: window.events
-      });
-    } catch (err) {
-      console.error("Error al guardar en Firestore:", err);
-    }
-  };
-
-  // Autenticación
-  window.toggleAuthMode = (mode) => {
-    if (mode === 'register') {
-      document.getElementById('form-login').classList.add('hidden');
-      document.getElementById('form-register').classList.remove('hidden');
-      document.getElementById('auth-title').textContent = 'Crear Usuario';
-      document.getElementById('auth-subtitle').textContent = 'Registra tus datos y asigna tu cargo';
-    } else {
-      document.getElementById('form-register').classList.add('hidden');
-      document.getElementById('form-login').classList.remove('hidden');
-      document.getElementById('auth-title').textContent = 'Iniciar Sesión';
-      document.getElementById('auth-subtitle').textContent = 'Ingresa tus datos para acceder al sistema privado';
-    }
-  };
-
-  window.handleRegister = async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    const role = document.getElementById('reg-role').value;
-
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", res.user.uid), {
-        name,
-        email,
-        role,
-        createdAt: new Date()
-      });
-      alert("Usuario registrado con éxito.");
-    } catch (err) {
-      alert("Error al registrar usuario: " + err.message);
-    }
-  };
-
-  window.handleLogin = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      alert("Error al iniciar sesión: Verifique el correo o contraseña.");
-    }
-  };
-
-  window.logout = () => signOut(auth);
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      currentUserData = userDoc.exists() ? userDoc.data() : { name: user.email, role: 'USUARIO' };
-
-      document.getElementById('auth-modal').classList.add('hidden');
-      document.getElementById('app-content').classList.remove('hidden');
-      document.getElementById('user-display').innerHTML = `<b class="text-purple-300">${currentUserData.name}</b> (${currentUserData.role})`;
-
-      initFirestoreSync();
-      renderNavigation();
-      renderBrandFilters();
-    } else {
-      document.getElementById('auth-modal').classList.remove('hidden');
-      document.getElementById('app-content').classList.add('hidden');
-    }
-  });
-
-  // Lógica UI & Renders
-  window.switchTab = (tab) => {
-    window.activeTab = tab;
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    const target = document.getElementById(`tab-${tab}`);
-    if (target) target.classList.remove('hidden');
-    renderNavigation();
-    renderCurrentTab();
-  };
-
-  window.setBrandFilter = (brandId) => {
-    window.activeBrand = brandId;
-    renderBrandFilters();
-    renderCurrentTab();
-  };
-
-  window.renderNavigation = () => {
-    const navItems = [
-      { id: 'dashboard', label: 'Panel General', icon: 'fa-chart-pie' },
-      { id: 'inventory', label: 'Inventario', icon: 'fa-boxes-stacked' },
-      { id: 'events', label: 'Eventos', icon: 'fa-calendar-days' },
-      { id: 'workers', label: 'Personal / Asignaciones', icon: 'fa-users' }
-    ];
-
-    const container = document.getElementById('side-nav');
-    if (!container) return;
-    container.innerHTML = navItems.map(item => `
-      <button onclick="switchTab('${item.id}')" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${window.activeTab === item.id ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'}">
-        <i class="fa-solid ${item.icon} text-sm"></i>
-        <span>${item.label}</span>
-      </button>
-    `).join('');
-  };
-
-  window.renderBrandFilters = () => {
-    const container = document.getElementById('brand-filters');
-    if (!container) return;
-    container.innerHTML = window.BRANDS.map(b => `
-      <button onclick="setBrandFilter('${b.id}')" class="px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${window.activeBrand === b.id ? `${b.color} text-white shadow-md` : 'bg-slate-800 text-slate-400 hover:text-white'}">
-        ${b.name}
-      </button>
-    `).join('');
-  };
-
-  window.renderCurrentTab = () => {
-    if (window.activeTab === 'dashboard') renderDashboard();
-    else if (window.activeTab === 'inventory') renderInventory();
-    else if (window.activeTab === 'events') renderEvents();
-    else if (window.activeTab === 'workers') renderWorkers();
-  };
-
-  // Dashboard
-  function renderDashboard() {
-    const container = document.getElementById('tab-dashboard');
-    if (!container) return;
-
-    const filteredItems = window.activeBrand === 'all' ? window.items : window.items.filter(i => i.brand === window.activeBrand);
-    const totalQty = filteredItems.reduce((acc, i) => acc + Number(i.qty || 0), 0);
-    const activeEvts = window.events.filter(e => e.status !== 'Finalizado').length;
-
-    container.innerHTML = `
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="glass-card p-5 rounded-2xl border-l-4 border-purple-500">
-          <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Ítems</div>
-          <div class="text-3xl font-extrabold text-white mt-2">${filteredItems.length}</div>
-          <div class="text-xs text-slate-500 mt-1">${totalQty} unidades totales</div>
-        </div>
-        <div class="glass-card p-5 rounded-2xl border-l-4 border-pink-500">
-          <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Eventos Activos</div>
-          <div class="text-3xl font-extrabold text-white mt-2">${activeEvts}</div>
-          <div class="text-xs text-slate-500 mt-1">En preparación o curso</div>
-        </div>
-        <div class="glass-card p-5 rounded-2xl border-l-4 border-blue-500">
-          <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Personal Registrado</div>
-          <div class="text-3xl font-extrabold text-white mt-2">${window.workers.length}</div>
-          <div class="text-xs text-slate-500 mt-1">Colaboradores activos</div>
-        </div>
-        <div class="glass-card p-5 rounded-2xl border-l-4 border-emerald-500">
-          <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Paneles</div>
-          <div class="text-3xl font-extrabold text-white mt-2">${window.panels.length}</div>
-          <div class="text-xs text-slate-500 mt-1">Categorías activas</div>
-        </div>
-      </div>
-
-      <div class="glass-card p-6 rounded-2xl space-y-4">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Eventos Recientes</h3>
-        <div class="divide-y divide-slate-800">
-          ${window.events.length === 0 ? '<p class="text-xs text-slate-500 py-4">No hay eventos registrados.</p>' : window.events.slice(-5).map(e => `
-            <div class="py-3 flex items-center justify-between">
-              <div>
-                <p class="text-xs font-bold text-white">${e.name}</p>
-                <p class="text-[10px] text-slate-400">${e.date \vert{}\vert{} 'Sin fecha'} •${e.location || 'Sin ubicación'}</p>
-              </div>
-              <span class="px-2 py-1 rounded-md text-[10px] font-bold ${e.status === 'Finalizado' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${e.status || 'Pendiente'}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // Inventario
-  window.renderInventory = () => {
-    const container = document.getElementById('panels-list');
-    if (!container) return;
-
-    const query = (document.getElementById('inventory-search')?.value || '').toLowerCase();
-    const filteredPanels = window.activeBrand === 'all' ? window.panels : window.panels.filter(p => p.brand === window.activeBrand);
-
-    if (filteredPanels.length === 0) {
-      container.innerHTML = `<p class="text-xs text-slate-500 text-center py-8">No se encontraron paneles.</p>`;
-      return;
-    }
-
-    container.innerHTML = filteredPanels.map(p => {
-      const panelItems = window.items.filter(i => i.panelId === p.id && (i.name.toLowerCase().includes(query) || (i.notes && i.notes.toLowerCase().includes(query))));
-      return `
-        <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
-          <div class="p-4 bg-slate-800/50 flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-folder text-purple-400"></i> ${p.name}
-            </h3>
-            <div class="flex items-center gap-2">
-              <button onclick="openItem('${p.id}')" class="px-2.5 py-1 bg-purple-600/30 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/30 rounded-lg text-xs font-bold transition-all">+ Ítem</button>
-              <button onclick="deletePanel('${p.id}')" class="p-1 text-slate-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </div>
-          <div class="p-4">
-            ${panelItems.length === 0 ? '<p class="text-xs text-slate-500">Sin ítems en este panel.</p>' : `
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead>
-                    <tr class="text-slate-400 border-b border-slate-800">
-                      <th class="pb-2">Nombre</th>
-                      <th class="pb-2">Cantidad</th>
-                      <th class="pb-2">Notas / Detalle</th>
-                      <th class="pb-2 text-right">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-800/50">
-                    ${panelItems.map(item => `
-                      <tr>
-                        <td class="py-2.5 font-semibold text-white">${item.name}</td>
-                        <td class="py-2.5 text-purple-300 font-bold">${item.qty}</td>
-                        <td class="py-2.5 text-slate-400">${item.notes || '-'}</td>
-                        <td class="py-2.5 text-right">
-                          <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-            `}
-          </div>
-        </div>
-      `;
-    }).join('');
-  };
-
-  // Modales y Acciones
-  window.openPanelModal = () => {
-    const name = prompt("Nombre del nuevo panel:");
-    if (!name) return;
-    window.panels.push({ id: 'p_' + Date.now(), name, brand: window.activeBrand === 'all' ? 'master' : window.activeBrand });
-    window.saveData();
-  };
-
-  window.deletePanel = (id) => {
-    if (!confirm("¿Eliminar panel y sus ítems?")) return;
-    window.panels = window.panels.filter(p => p.id !== id);
-    window.items = window.items.filter(i => i.panelId !== id);
-    window.saveData();
-  };
-
-  window.openItem = (panelId = null) => {
-    const pId = panelId || (window.panels[0] ? window.panels[0].id : null);
-    if (!pId) {
-      alert("Crea un panel primero.");
-      return;
-    }
-    const name = prompt("Nombre del artículo:");
-    if (!name) return;
-    const qty = parseInt(prompt("Cantidad:", "1") || "1", 10);
-    const notes = prompt("Notas adicionales (talla, observaciones, etc.):", "");
-
-    window.items.push({
-      id: 'i_' + Date.now(),
-      panelId: pId,
-      name,
-      qty,
-      notes,
-      brand: window.activeBrand === 'all' ? 'master' : window.activeBrand
-    });
-    window.saveData();
-  };
-
-  window.deleteItem = (id) => {
-    if (!confirm("¿Eliminar este artículo?")) return;
-    window.items = window.items.filter(i => i.id !== id);
-    window.saveData();
-  };
-
-  // Eventos
-  window.renderEvents = () => {
-    const container = document.getElementById('events-list-container');
-    if (!container) return;
-
-    if (window.events.length === 0) {
-      container.innerHTML = `
-        <div class="glass-card p-8 rounded-2xl text-center space-y-3">
-          <p class="text-xs text-slate-400">No hay eventos creados.</p>
-          <button onclick="openEvent()" class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold shadow-md">+ Crear Primer Evento</button>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = window.events.map(evt => `
-      <div class="glass-card p-5 rounded-2xl space-y-3 border border-slate-800">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-white">${evt.name}</h3>
-            <p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${evt.location || 'Sin dirección'} | <i class="fa-solid fa-calendar text-purple-400 mr-1"></i>${evt.date || 'Sin fecha'}</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${evt.status === 'Finalizado' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${evt.status}</span>
-            <button onclick="deleteEvent('${evt.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  };
-
-  window.openEvent = () => {
-    const name = prompt("Nombre del Evento:");
-    if (!name) return;
-    const location = prompt("Ubicación / Lugar:", "");
-    const date = prompt("Fecha del evento (AAAA-MM-DD):", new Date().toISOString().split('T')[0]);
-
-    window.events.push({
-      id: 'e_' + Date.now(),
-      name,
-      location,
-      date,
-      status: 'Planificado'
-    });
-    window.saveData();
-  };
-
-  window.deleteEvent = (id) => {
-    if (!confirm("¿Eliminar este evento?")) return;
-    window.events = window.events.filter(e => e.id !== id);
-    window.saveData();
-  };
-
-  // Personal
-  window.renderWorkers = () => {
-    const container = document.getElementById('workers-grid');
-    if (!container) return;
-
-    if (window.workers.length === 0) {
-      container.innerHTML = `
-        <div class="col-span-full glass-card p-8 rounded-2xl text-center space-y-3">
-          <p class="text-xs text-slate-400">No hay personal registrado.</p>
-          <button onclick="openWorker()" class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold shadow-md">+ Registrar Personal</button>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = window.workers.map(w => `
-      <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center text-xs">${w.name.charAt(0)}</div>
-            <div>
-              <p class="text-xs font-bold text-white">${w.name}</p>
-              <p class="text-[10px] text-slate-400">${w.role || 'Colaborador'}</p>
-            </div>
-          </div>
-          <button onclick="deleteWorker('${w.id}')" class="text-slate-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-    `).join('');
-  };
-
-  window.openWorker = () => {
-    const name = prompt("Nombre del Colaborador:");
-    if (!name) return;
-    const role = prompt("Cargo / Función:", "Logística / Montaje");
-
-    window.workers.push({
-      id: 'w_' + Date.now(),
-      name,
-      role
-    });
-    window.saveData();
-  };
-
-  window.deleteWorker = (id) => {
-    if (!confirm("¿Eliminar este trabajador?")) return;
-    window.workers = window.workers.filter(w => w.id !== id);
-    window.saveData();
-  };
+});
 </script>
 </body>
 </html>
