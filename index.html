@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-900 text-slate-100">
 <head>
-<link rel="icon" href="img/WhatsApp Image 2026-10-05 at 23.30.43.jpeg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MASTER EVENTOS - Gestión de Inventario y Equipos</title>
@@ -195,11 +194,19 @@ document.addEventListener('focusout',()=>{if(deferredRender){deferredRender=fals
 
 /* ---- Disponibilidad por fechas solapadas ---- */
 const endOf=e=>e.dateEnd||e.date;
-const usedQty=(iid,s,e,ex)=>events.reduce((t,v)=>(v.id===ex||!(v.date<=e&&s<=endOf(v)))?t:t+Number((v.assignedItems||[]).find(i=>i.itemId===iid)?.qty||0),0);
-const freeQty=(it,s,e,ex)=>Math.max(0,it.quantity-usedQty(it.id,s,e,ex));
+const mins=t=>{const [h,m]=(t||'').split(':').map(Number);return isNaN(h)?null:h*60+(m||0)};
+const span=(a,b)=>{const x=mins(a);let y=mins(b);if(x===null||y===null)return[0,1440];if(y<=x)y+=1440;return[x,y]};
+const usedQty=(iid,s,e,ex,ts,te)=>events.reduce((t,v)=>{
+  if(v.id===ex||!(v.date<=e&&s<=endOf(v)))return t;
+  // Mismo día y ambos con horario: solo cuenta si las horas se cruzan
+  if(ts&&te&&v.tStart&&v.tEnd&&s===e&&v.date===s&&endOf(v)===s){const A=span(ts,te),B=span(v.tStart,v.tEnd);if(!(A[0]<B[1]&&B[0]<A[1]))return t}
+  return t+Number((v.assignedItems||[]).find(i=>i.itemId===iid)?.qty||0)},0);
+const freeQty=(it,s,e,ex,ts,te)=>Math.max(0,it.quantity-usedQty(it.id,s,e,ex,ts,te));
+const sk=e=>e.date+' '+(e.tStart||'');
 const getBrandBadgeClass=b=>({'MASTER SHOW':'bg-pink-500/20 text-pink-300 border-pink-500/30','DRINKMY':'bg-blue-500/20 text-blue-300 border-blue-500/30','SPORTIZ':'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'}[b]||'bg-purple-500/20 text-purple-300 border-purple-500/30');
 const brandOpts=(sel,all)=>(all?['TODAS']:[]).concat(['MASTER EVENTOS','MASTER SHOW','DRINKMY','SPORTIZ']).map(b=>`<option value="${b}" ${b===sel?'selected':''}>${b==='TODAS'?'TODAS / MASTER EVENTOS':b}</option>`).join('');
-const dateLabel=e=>endOf(e)===e.date?e.date:`${e.date} → ${endOf(e)}`;
+const teamNames=e=>(e.extraWorkers||[]).map(id=>(workers.find(z=>z.id===id)||{}).name).filter(Boolean).map(esc).join(', ');
+const dateLabel=e=>(endOf(e)===e.date?e.date:`${e.date} → ${endOf(e)}`)+(e.tStart?` · ${e.tStart}–${e.tEnd}`:'');
 
 /* ---- Navegación ---- */
 const TABS=[['dashboard','chart-pie','Panel General','Inicio'],['inventory','boxes-stacked','Inventario / Ítems','Inventario'],['events','calendar-check','Eventos & Ocupación','Eventos'],['calendar','calendar-days','Vista Calendario','Calendario'],['workers','users','Equipo & Personal','Equipo']];
@@ -218,7 +225,7 @@ function renderCurrentTab(){({dashboard:renderDashboard,inventory:renderInventor
 function renderDashboard(){
   const t=todayStr(),F=currentBrandFilter,fi=F==='ALL'?items:items.filter(i=>i.brand===F),fe=F==='ALL'?events:events.filter(e=>e.brand===F);
   const units=fi.reduce((a,i)=>a+Number(i.quantity||0),0),inUse=fi.reduce((a,i)=>a+usedQty(i.id,t,t),0);
-  const up=fe.filter(e=>endOf(e)>=t).sort((a,b)=>a.date.localeCompare(b.date));
+  const up=fe.filter(e=>endOf(e)>=t).sort((a,b)=>sk(a).localeCompare(sk(b)));
   const stat=(c,lbl,val,sub,ic,vc)=>`<div class="glass-card p-4 rounded-2xl border-l-4 border-l-${c}-500 flex items-center justify-between"><div><p class="text-xs text-slate-400 font-medium">${lbl}</p><h3 class="text-2xl font-black ${vc} mt-0.5">${val}</h3><p class="text-[11px] ${vc==='text-white'?'text-purple-400':'text-slate-400'} mt-1">${sub}</p></div><div class="w-11 h-11 rounded-xl bg-${c}-500/10 text-${c}-400 flex items-center justify-center text-xl"><i class="fa-solid fa-${ic}"></i></div></div>`;
   const bc=(n,c,d,b)=>`<div class="p-3.5 rounded-xl bg-slate-800/70 border border-${c}-500/30 flex items-center justify-between"><div><span class="text-xs font-bold text-${c}-400 block">${n}</span><span class="text-[11px] text-slate-400">${d}</span></div><div class="text-right"><span class="text-sm font-black text-white">${items.filter(i=>i.brand===b).length}</span><span class="text-[10px] text-slate-400 block">ítems</span></div></div>`;
   $('#tab-dashboard').innerHTML=`
@@ -243,7 +250,7 @@ function renderDashboard(){
       <div class="p-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="space-y-1"><div class="flex items-center gap-2"><span class="px-2 py-0.5 text-[10px] font-bold rounded-md border ${getBrandBadgeClass(evt.brand)}">${evt.brand}</span><h4 class="font-bold text-xs text-white">${esc(evt.name)}</h4></div>
         <p class="text-[11px] text-slate-400 flex items-center gap-3"><span><i class="fa-solid fa-calendar mr-1 text-purple-400"></i>${dateLabel(evt)}</span><span><i class="fa-solid fa-location-dot mr-1 text-pink-400"></i>${esc(evt.location)}</span></p></div>
-        <div class="flex items-center gap-3 text-xs border-t sm:border-t-0 border-slate-700/50 pt-2 sm:pt-0"><div class="text-right"><span class="text-slate-300 font-semibold block text-[11px]"><i class="fa-solid fa-user-check text-emerald-400 mr-1"></i>${w?esc(w.name):'Sin asignar'}</span><span class="text-slate-400 text-[10px] block">${n} ítems asignados</span></div></div></div>`}).join(''):'<div class="text-center py-6 text-slate-500 text-xs">No hay eventos agendados para este filtro.</div>'}</div>
+        <div class="flex items-center gap-3 text-xs border-t sm:border-t-0 border-slate-700/50 pt-2 sm:pt-0"><div class="text-right"><span class="text-slate-300 font-semibold block text-[11px]"><i class="fa-solid fa-user-check text-emerald-400 mr-1"></i>${w?esc(w.name):'Sin asignar'}</span>${teamNames(evt)?`<span class="text-slate-400 text-[10px] block"><i class="fa-solid fa-users mr-1"></i>Equipo: ${teamNames(evt)}</span>`:''}<span class="text-slate-400 text-[10px] block">${n} ítems asignados</span></div></div></div>`}).join(''):'<div class="text-center py-6 text-slate-500 text-xs">No hay eventos agendados para este filtro.</div>'}</div>
     </div>
     <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
       <h3 class="font-bold text-base text-slate-100 flex items-center gap-2"><i class="fa-solid fa-sitemap text-pink-400"></i> Estado por Marca</h3>
@@ -257,7 +264,7 @@ const IC='w-full px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl t
 function togglePanel(id){openPanels.has(id)?openPanels.delete(id):openPanels.add(id);renderInventory()}
 function itemRow(item,t){
   const occ=usedQty(item.id,t,t),av=Math.max(0,item.quantity-occ);
-  const res=events.filter(e=>endOf(e)>=t&&(e.assignedItems||[]).some(x=>x.itemId===item.id)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3)
+  const res=events.filter(e=>endOf(e)>=t&&(e.assignedItems||[]).some(x=>x.itemId===item.id)).sort((a,b)=>sk(a).localeCompare(sk(b))).slice(0,3)
    .map(e=>`<p class="text-[10px] text-amber-300"><i class="fa-solid fa-location-dot mr-1"></i>${dateLabel(e)} · ${esc(e.location)} · ${e.assignedItems.find(x=>x.itemId===item.id).qty} un.</p>`).join('');
   return`<div class="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
     <div class="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center text-slate-600 shrink-0">${item.photo?`<img src="${esc(item.photo)}" class="w-full h-full object-cover" onerror="this.remove()">`:'<i class="fa-solid fa-image text-xl"></i>'}</div>
@@ -312,7 +319,7 @@ function deletePanel(id){const n=items.filter(i=>i.panel===id).length;if(!confir
 function prog(e){const a=e.assignedItems||[],n=a.length*3,d=a.reduce((t,i)=>t+(i.pick?1:0)+(i.deliv?1:0)+(i.ret?1:0),0);return n?Math.round(d/n*100):0}
 function tog(eid,iid,f){const x=events.find(e=>e.id===eid).assignedItems.find(i=>i.itemId===iid);x[f]=!x[f];saveData()}
 function renderEvents(){
-  const c=$('#events-list-container'),L=(currentBrandFilter==='ALL'?events:events.filter(e=>e.brand===currentBrandFilter)).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const c=$('#events-list-container'),L=(currentBrandFilter==='ALL'?events:events.filter(e=>e.brand===currentBrandFilter)).slice().sort((a,b)=>sk(a).localeCompare(sk(b)));
   if(!L.length){c.innerHTML=`<div class="glass-card p-12 text-center text-slate-500 rounded-2xl"><i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-600 block"></i><p class="text-sm font-medium">No hay eventos agendados para esta selección.</p><button onclick="openEvent()" class="mt-3 text-xs text-pink-400 hover:underline">+ Crear un evento ahora</button></div>`;return}
   c.innerHTML=L.map(evt=>{
     const w=workers.find(x=>x.id===evt.workerId),pr=prog(evt);
@@ -328,6 +335,7 @@ function renderEvents(){
         <div class="space-y-2"><div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-location-dot w-5 text-pink-400 text-center"></i><span><b>Ubicación:</b> ${esc(evt.location)}</span></div>
           <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-user-shield w-5 text-emerald-400 text-center"></i><span><b>Responsable Cargo:</b> ${w?`${esc(w.name)} (${esc(w.role)})`:'Sin asignar'}</span></div>
           ${w&&w.phone?`<div class="flex items-center gap-2 text-xs text-slate-400 pl-7"><i class="fa-solid fa-phone text-[10px]"></i><span>${esc(w.phone)}</span></div>`:''}
+          ${(evt.extraWorkers||[]).length?`<div class="flex items-start gap-2 text-xs text-slate-300"><i class="fa-solid fa-users w-5 text-emerald-400 text-center mt-0.5"></i><span><b>Equipo:</b> ${evt.extraWorkers.map(id=>{const x=workers.find(z=>z.id===id);return x?esc(x.name):''}).filter(Boolean).join(', ')}</span></div>`:''}
           ${rows?`<div class="pt-1"><div class="flex justify-between text-[11px] text-slate-400 mb-1"><span>Checklist de montaje</span><span>${pr}%</span></div><div class="h-1.5 bg-slate-800 rounded-full overflow-hidden"><div class="gradient-brand h-full" style="width:${pr}%"></div></div></div>`:''}</div>
         <div><h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-boxes-packing text-purple-400"></i> Inventario Reservado:</h4><div class="space-y-1.5 max-h-60 overflow-y-auto">${rows||'<p class="text-xs text-slate-500 italic">No hay ítems asignados.</p>'}</div></div>
       </div></div>`}).join('');
@@ -353,17 +361,17 @@ function selectCalendarDate(ds){
   selectedCalendarDateStr=ds;renderCalendar();
   $('#calendar-day-details').classList.remove('hidden');$('#selected-date-title').textContent=ds;
   const E=dayEvents(ds);
-  $('#calendar-day-events-list').innerHTML=E.length?E.map(evt=>{const w=workers.find(x=>x.id===evt.workerId);return`<div class="p-3 rounded-xl bg-slate-800 border border-slate-700 flex justify-between items-center text-xs"><div><span class="text-pink-400 font-bold block">${evt.brand} - ${esc(evt.name)}</span><span class="text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${esc(evt.location)}</span></div><div class="text-right"><span class="text-slate-200 font-semibold block">${w?esc(w.name):'Sin Responsable'}</span><span class="text-purple-400 text-[10px]">${(evt.assignedItems||[]).length} tipos de ítems</span></div></div>`}).join(''):'<p class="text-xs text-slate-500 italic">Sin eventos registrados para este día.</p>';
+  $('#calendar-day-events-list').innerHTML=E.length?E.map(evt=>{const w=workers.find(x=>x.id===evt.workerId);return`<div class="p-3 rounded-xl bg-slate-800 border border-slate-700 flex justify-between items-center text-xs"><div><span class="text-pink-400 font-bold block">${evt.brand} - ${esc(evt.name)}</span><span class="text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${esc(evt.location)}${evt.tStart?` · <i class="fa-regular fa-clock mr-1"></i>${evt.tStart}–${evt.tEnd}`:''}</span></div><div class="text-right"><span class="text-slate-200 font-semibold block">${w?esc(w.name):'Sin Responsable'}</span>${teamNames(evt)?`<span class="text-slate-400 text-[10px] block">Equipo: ${teamNames(evt)}</span>`:''}<span class="text-purple-400 text-[10px]">${(evt.assignedItems||[]).length} tipos de ítems</span></div></div>`}).join(''):'<p class="text-xs text-slate-500 italic">Sin eventos registrados para este día.</p>';
 }
 
 /* ---- Equipo ---- */
 function renderWorkers(){
   const L=currentBrandFilter==='ALL'?workers:workers.filter(w=>w.brand==='TODAS'||w.brand===currentBrandFilter);
-  $('#workers-grid').innerHTML=L.length?L.map(w=>{const A=events.filter(e=>e.workerId===w.id);return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
+  $('#workers-grid').innerHTML=L.length?L.map(w=>{const A=events.filter(e=>e.workerId===w.id||(e.extraWorkers||[]).includes(w.id));return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
     <button onclick="deleteWorker('${w.id}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors text-xs"><i class="fa-solid fa-trash-can"></i></button>
     <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-lg">${esc(w.name.charAt(0))}</div><div><h3 class="font-bold text-sm text-white">${esc(w.name)}</h3><p class="text-xs text-emerald-400">${esc(w.role)}</p></div></div>
     <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800"><p><i class="fa-solid fa-phone w-4 text-slate-500"></i> ${esc(w.phone)||'Sin número'}</p><p><i class="fa-solid fa-tag w-4 text-slate-500"></i> Área: ${w.brand}</p></div>
-    <div class="pt-2"><span class="text-[11px] font-bold text-slate-400 block mb-1">Eventos Asignados (${A.length}):</span><div class="space-y-1">${A.map(e=>`<span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] border border-slate-700 mr-1 mb-1">${esc(e.name)}</span>`).join('')||'<span class="text-[10px] text-slate-500 italic">Ningún evento asignado.</span>'}</div></div></div>`}).join(''):'<div class="col-span-full py-12 text-center text-slate-500"><i class="fa-solid fa-users-slash text-4xl mb-3 text-slate-600 block"></i><p class="text-sm">No hay miembros registrados para esta marca.</p></div>';
+    <div class="pt-2"><span class="text-[11px] font-bold text-slate-400 block mb-1">Eventos Asignados (${A.length}):</span><div class="space-y-1">${A.map(e=>`<span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] border border-slate-700 mr-1 mb-1">${esc(e.name)} <b class="text-slate-400 font-medium">· ${e.workerId===w.id?'Responsable':'Apoyo'}</b></span>`).join('')||'<span class="text-[10px] text-slate-500 italic">Ningún evento asignado.</span>'}</div></div></div>`}).join(''):'<div class="col-span-full py-12 text-center text-slate-500"><i class="fa-solid fa-users-slash text-4xl mb-3 text-slate-600 block"></i><p class="text-sm">No hay miembros registrados para esta marca.</p></div>';
 }
 function deleteWorker(id){if(confirm('¿Eliminar este trabajador del registro?')){workers=workers.filter(w=>w.id!==id);saveData()}}
 function deleteEvent(id){if(confirm('¿Deseas cancelar y eliminar este evento?')){events=events.filter(e=>e.id!==id);saveData()}}
@@ -416,28 +424,30 @@ function openEvent(id){
   showModal('modal-event','max-w-xl',`<i class="fa-solid fa-${id?'pen-to-square':'calendar-plus'} text-pink-400"></i> ${id?'Editar Evento':'Registrar & Agendar Evento'}`,`<form onsubmit="saveEvent(event,'${id||''}')" class="space-y-4">
   ${fld('Nombre o Título del Evento *',`<input id="event-name" required value="${esc(e.name)}" placeholder="Ej: Boda López - Hora Loca & Barra" class="${PC}">`)}
   <div class="grid grid-cols-2 gap-3">${fld('Sub-marca Encargada *',`<select id="event-brand" class="${PC}">${brandOpts(e.brand)}</select>`)}${fld('Trabajador Responsable *',`<select id="event-worker" class="${PC}">${workers.map(w=>`<option value="${w.id}" ${w.id===e.workerId?'selected':''}>${esc(w.name)} - ${esc(w.role)}</option>`).join('')}</select>`)}</div>
-  <div class="grid grid-cols-2 gap-3">${fld('Fecha de inicio *',`<input type="date" id="event-date" required value="${e.date}" onchange="if($('#event-end').value<this.value)$('#event-end').value=this.value;refreshAvail('${id||''}')" class="${PC}">`)}${fld('Fecha de fin *',`<input type="date" id="event-end" required value="${endOf(e)}" onchange="refreshAvail('${id||''}')" class="${PC}">`)}</div>
+  ${fld('Trabajadores adicionales (opcional)',`<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-32 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${workers.map(w=>`<label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer"><input type="checkbox" class="event-extra-worker accent-pink-500" value="${w.id}" ${(e.extraWorkers||[]).includes(w.id)?'checked':''}>${esc(w.name)} <span class="text-slate-500">· ${esc(w.role)}</span></label>`).join('')}</div>`)}
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${fld('Fecha del evento *',`<input type="date" id="event-date" required value="${e.date}" onchange="refreshAvail('${id||''}')" class="${PC}">`)}${fld('Hora del show (inicio – fin) *',`<div class="flex items-center gap-2"><input type="time" id="event-tstart" required value="${e.tStart||''}" onchange="refreshAvail('${id||''}')" class="${PC}"><span class="text-slate-500 text-xs">a</span><input type="time" id="event-tend" required value="${e.tEnd||''}" onchange="refreshAvail('${id||''}')" class="${PC}"></div>`)}</div>
   ${fld('Lugar / Ubicación del Evento *',`<input id="event-location" required value="${esc(e.location)}" placeholder="Ej: Salón Villa Real" class="${PC}">`)}
-  ${fld('Asignar Ítems de Inventario (máximo = unidades libres en esas fechas)',`<div class="space-y-3 max-h-56 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${panels.map(pn=>{const L=items.filter(i=>i.panel===pn.id);return L.length?`<div><p class="text-[10px] font-bold text-purple-400 mb-1">${esc(pn.name)}</p>${L.map(i=>`<div class="flex items-center justify-between text-xs py-1 border-b border-slate-900"><span class="text-slate-300">${esc(i.name)}<span class="block text-[10px]" data-av="${i.id}"></span></span><input type="number" min="0" value="${(e.assignedItems||[]).find(a=>a.itemId===i.id)?.qty||0}" data-item-id="${i.id}" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500"></div>`).join('')}</div>`:''}).join('')}</div>`)}
+  ${fld('Asignar Ítems de Inventario (máximo = unidades libres en ese horario)',`<div class="space-y-3 max-h-56 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${panels.map(pn=>{const L=items.filter(i=>i.panel===pn.id);return L.length?`<div><p class="text-[10px] font-bold text-purple-400 mb-1">${esc(pn.name)}</p>${L.map(i=>`<div class="flex items-center justify-between text-xs py-1 border-b border-slate-900"><span class="text-slate-300">${esc(i.name)}<span class="block text-[10px]" data-av="${i.id}"></span></span><input type="number" min="0" value="${(e.assignedItems||[]).find(a=>a.itemId===i.id)?.qty||0}" data-item-id="${i.id}" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500"></div>`).join('')}</div>`:''}).join('')}</div>`)}
   ${actions('bg-pink-600 hover:bg-pink-500','Guardar Evento')}</form>`);
   refreshAvail(id||'');
 }
 function refreshAvail(id){
-  const s=$('#event-date').value,en=$('#event-end').value;
-  items.forEach(i=>{const f=freeQty(i,s,en,id),el=document.querySelector(`[data-av="${i.id}"]`),inp=document.querySelector(`[data-item-id="${i.id}"]`);if(!el)return;el.innerHTML=f?`<span class="text-emerald-400">${f} libres</span> de ${i.quantity}`:'<span class="text-rose-400">Sin stock en esas fechas</span>';inp.max=f});
+  const s=$('#event-date').value,ts=$('#event-tstart').value,te=$('#event-tend').value;
+  items.forEach(i=>{const f=freeQty(i,s,s,id,ts,te),el=document.querySelector(`[data-av="${i.id}"]`),inp=document.querySelector(`[data-item-id="${i.id}"]`);if(!el)return;el.innerHTML=f?`<span class="text-emerald-400">${f} libres</span> de ${i.quantity}`:'<span class="text-rose-400">Sin stock en ese horario</span>';inp.max=f});
 }
 function saveEvent(ev,id){
   ev.preventDefault();
-  const s=$('#event-date').value,en=$('#event-end').value,old=(events.find(x=>x.id===id)||{}).assignedItems||[];
-  if(en<s)return alert('La fecha final es anterior a la inicial.');
+  const s=$('#event-date').value,en=s,ts=$('#event-tstart').value,te=$('#event-tend').value,old=(events.find(x=>x.id===id)||{}).assignedItems||[];
+  if(ts===te)return alert('La hora de inicio y la de fin no pueden ser iguales.');
   const assigned=[];
   for(const inp of document.querySelectorAll('.event-item-qty')){
     const q=Number(inp.value||0);if(q<=0)continue;
-    const it=items.find(i=>i.id===inp.dataset.itemId),f=freeQty(it,s,en,id);
-    if(q>f)return alert(`«${it.name}»: solo hay ${f} unidades libres en esas fechas.`);
+    const it=items.find(i=>i.id===inp.dataset.itemId),f=freeQty(it,s,en,id,ts,te);
+    if(q>f)return alert(`«${it.name}»: solo hay ${f} unidades libres en ese horario.`);
     const o=old.find(a=>a.itemId===it.id)||{};assigned.push({itemId:it.id,qty:q,pick:!!o.pick,deliv:!!o.deliv,ret:!!o.ret});
   }
-  const o={id:id||'evt-'+Date.now(),name:$('#event-name').value,brand:$('#event-brand').value,date:s,dateEnd:en,location:$('#event-location').value,workerId:$('#event-worker').value,assignedItems:assigned};
+  const extra=[...document.querySelectorAll('.event-extra-worker:checked')].map(x=>x.value).filter(v=>v!==$('#event-worker').value);
+  const o={id:id||'evt-'+Date.now(),name:$('#event-name').value,brand:$('#event-brand').value,date:s,dateEnd:en,tStart:ts,tEnd:te,location:$('#event-location').value,workerId:$('#event-worker').value,extraWorkers:extra,assignedItems:assigned};
   id?events[events.findIndex(x=>x.id===id)]=o:events.push(o);
   closeModal();saveData();
 }
