@@ -478,9 +478,31 @@ function openEvent(id){
   ${fld('Trabajadores adicionales (opcional)',`<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-32 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${workers.map(w=>`<label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer"><input type="checkbox" class="event-extra-worker accent-pink-500" value="${w.id}" ${(e.extraWorkers||[]).includes(w.id)?'checked':''}>${esc(w.name)} <span class="text-slate-500">· ${esc(w.role)}</span></label>`).join('')}</div>`)}
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${fld('Fecha del evento *',`<input type="date" id="event-date" required value="${e.date}" onchange="refreshAvail('${id||''}')" class="${PC}">`)}${fld('Hora del show (inicio – fin) *',`<div class="flex items-center gap-2"><input type="time" id="event-tstart" required value="${e.tStart||''}" onchange="refreshAvail('${id||''}')" class="${PC}"><span class="text-slate-500 text-xs">a</span><input type="time" id="event-tend" required value="${e.tEnd||''}" onchange="refreshAvail('${id||''}')" class="${PC}"></div>`)}</div>
   ${fld('Lugar / Ubicación del Evento *',`<input id="event-location" required value="${esc(e.location)}" placeholder="Ej: Salón Villa Real" class="${PC}">`)}
-  ${fld('Asignar Ítems de Inventario (máximo = unidades libres en ese horario)',`<div class="space-y-3 max-h-56 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${panels.map(pn=>{const L=items.filter(i=>i.panel===pn.id);return L.length?`<div><p class="text-[10px] font-bold text-purple-400 mb-1">${esc(pn.name)}</p>${L.map(i=>`<div class="flex items-center justify-between text-xs py-1 border-b border-slate-900"><span class="text-slate-300">${esc(i.name)}<span class="block text-[10px]" data-av="${i.id}"></span></span><input type="number" min="0" value="${(e.assignedItems||[]).find(a=>a.itemId===i.id)?.qty||0}" data-item-id="${i.id}" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500"></div>`).join('')}</div>`:''}).join('')}</div>`)}
+  ${fld('Asignar Ítems de Inventario (máximo = unidades libres en ese horario)',`<div class="relative mb-2"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i><input id="event-item-search" type="search" oninput="filterEventItems()" onkeydown="if(event.key==='Enter')event.preventDefault()" placeholder="Buscar ítem por nombre, talla, color o panel..." class="${PC} pl-9"></div>
+  <div class="flex items-center justify-between mb-2 text-[11px] text-slate-400"><label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="event-item-only" onchange="filterEventItems()" class="accent-pink-500"> Solo seleccionados</label><span id="event-sel-count" class="text-pink-400 font-semibold"></span></div>
+  <div id="event-items-list" class="space-y-3 max-h-64 overflow-y-auto p-3 bg-slate-950 rounded-xl border border-slate-800">${panels.map(pn=>{const L=items.filter(i=>i.panel===pn.id);return L.length?`<div class="ev-panel"><p class="text-[10px] font-bold text-purple-400 mb-1">${esc(pn.name)}</p>${L.map(i=>`<div class="ev-row flex items-center justify-between text-xs py-1 px-1 rounded border-b border-slate-900" data-q="${esc((i.name+' '+(i.size||'')+' '+(i.color||'')+' '+pn.name).toLowerCase())}"><span class="text-slate-300">${esc(i.name)}<span class="block text-[10px]" data-av="${i.id}"></span></span><input type="number" min="0" value="${(e.assignedItems||[]).find(a=>a.itemId===i.id)?.qty||0}" data-item-id="${i.id}" oninput="updateSelCount()" class="event-item-qty w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-center text-white focus:outline-none focus:border-pink-500"></div>`).join('')}</div>`:''}).join('')}<p id="event-items-empty" class="hidden text-center text-xs text-slate-500 py-3">Ningún ítem coincide con la búsqueda.</p></div>`)}
   ${actions('bg-pink-600 hover:bg-pink-500','Guardar Evento')}</form>`);
-  refreshAvail(id||'');
+  refreshAvail(id||'');updateSelCount();
+}
+function filterEventItems(){
+  const q=($('#event-item-search').value||'').toLowerCase().trim(),only=$('#event-item-only').checked;let total=0;
+  document.querySelectorAll('#event-items-list .ev-panel').forEach(p=>{
+    let vis=0;
+    p.querySelectorAll('.ev-row').forEach(r=>{
+      const sel=Number(r.querySelector('.event-item-qty').value||0)>0,show=(!q||r.dataset.q.includes(q))&&(!only||sel);
+      r.style.display=show?'':'none';if(show)vis++;
+    });
+    p.style.display=vis?'':'none';total+=vis;
+  });
+  const em=$('#event-items-empty');if(em)em.classList.toggle('hidden',total>0);
+}
+function updateSelCount(){
+  let n=0;
+  document.querySelectorAll('#event-items-list .ev-row').forEach(r=>{
+    const sel=Number(r.querySelector('.event-item-qty').value||0)>0;if(sel)n++;
+    r.classList.toggle('bg-pink-500/10',sel);
+  });
+  const el=$('#event-sel-count');if(el)el.textContent=n+(n===1?' seleccionado':' seleccionados');
 }
 function refreshAvail(id){
   const s=$('#event-date').value,ts=$('#event-tstart').value,te=$('#event-tend').value;
