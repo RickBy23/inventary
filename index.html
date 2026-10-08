@@ -6,6 +6,7 @@
 <title>MASTER EVENTOS - Gestión de Inventario y Equipos</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -121,6 +122,7 @@ tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta
           <p class="text-xs text-slate-400">Asigna personal responsable y reservas de equipos para cada celebración</p>
         </div>
         <div class="flex items-center gap-2 self-start md:self-auto">
+          <button onclick="refreshRsvp(true)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-rotate"></i> Confirmaciones</button>
           <button id="toggle-done" onclick="toggleDone()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5"></button>
           <button onclick="openEvent()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Agendar Evento</button>
         </div>
@@ -222,7 +224,7 @@ function drawNav(){
   $('#mobile-nav').innerHTML=TABS.map(t=>`<button onclick="switchTab('${t[0]}')" class="flex flex-col items-center gap-1 p-2 ${currentTab===t[0]?'text-purple-400':'text-slate-400'}"><i class="fa-solid fa-${t[1]} text-lg"></i><span class="text-[10px] font-medium">${t[3]}</span></button>`).join('');
   $('#brand-filters').innerHTML=BRANDS.map(b=>`<button onclick="setBrandFilter('${b[0]}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentBrandFilter===b[0]?'bg-purple-600 text-white shadow-sm':'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'}">${b[2]} ${b[1]}</button>`).join('');
 }
-function switchTab(t){currentTab=t;document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));$('#tab-'+t).classList.remove('hidden');drawNav();renderCurrentTab()}
+function switchTab(t){currentTab=t;document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));$('#tab-'+t).classList.remove('hidden');drawNav();renderCurrentTab();if(t==='events')refreshRsvp()}
 const toggleMobileNav=()=>$('#mobileNavMenu').classList.toggle('hidden');
 function setBrandFilter(b){currentBrandFilter=b;drawNav();renderCurrentTab()}
 function renderCurrentTab(){({dashboard:renderDashboard,inventory:renderInventory,events:renderEvents,calendar:renderCalendar,workers:renderWorkers})[currentTab]()}
@@ -348,6 +350,7 @@ function renderEvents(){
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
         <div><div class="flex items-center gap-2 mb-1"><span class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md border ${getBrandBadgeClass(evt.brand)}">${evt.brand}</span><span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${dateLabel(evt)}</span></div><h3 class="text-base font-extrabold text-white">${esc(evt.name)}</h3></div>
         <div class="flex items-center gap-2 self-end sm:self-auto">${evt.done?`<button onclick="reopenEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-semibold text-amber-400"><i class="fa-solid fa-rotate-left mr-1"></i> Reabrir</button>`:`<button onclick="markDone('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-xs font-semibold text-sky-400"><i class="fa-solid fa-circle-check mr-1"></i> Evento realizado</button>`}
+        <button onclick="openReport('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 text-xs font-semibold text-violet-300"><i class="fa-solid fa-clipboard-list mr-1"></i> Reporte</button>
         <button onclick="copySummary('${evt.id}',this)" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-400"><i class="fa-regular fa-copy mr-1"></i> Copiar resumen</button>
         <button onclick="openEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"><i class="fa-solid fa-pen-to-square mr-1"></i> Editar</button>
         <button onclick="deleteEvent('${evt.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-xs font-semibold text-rose-400"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button></div></div>
@@ -356,6 +359,7 @@ function renderEvents(){
           <div class="flex items-center gap-2 text-xs text-slate-300"><i class="fa-solid fa-user-shield w-5 text-emerald-400 text-center"></i><span><b>Responsable Cargo:</b> ${w?`${esc(w.name)} (${esc(w.role)})`:'Sin asignar'}</span></div>
           ${w&&w.phone?`<div class="flex items-center gap-2 text-xs text-slate-400 pl-7"><i class="fa-solid fa-phone text-[10px]"></i><span>${esc(w.phone)}</span></div>`:''}
           ${(evt.extraWorkers||[]).length?`<div class="flex items-start gap-2 text-xs text-slate-300"><i class="fa-solid fa-users w-5 text-emerald-400 text-center mt-0.5"></i><span><b>Equipo:</b> ${evt.extraWorkers.map(id=>{const x=workers.find(z=>z.id===id);return x?esc(x.name):''}).filter(Boolean).join(', ')}</span></div>`:''}
+          ${rsvpBlock(evt)}
           ${rows?`<div class="pt-1"><div class="flex justify-between text-[11px] text-slate-400 mb-1"><span>Checklist de montaje</span><span>${pr}%</span></div><div class="h-1.5 bg-slate-800 rounded-full overflow-hidden"><div class="gradient-brand h-full" style="width:${pr}%"></div></div></div>`:''}</div>
         <div><h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-boxes-packing text-purple-400"></i> Inventario Reservado:</h4><div class="space-y-1.5 max-h-60 overflow-y-auto">${rows||'<p class="text-xs text-slate-500 italic">No hay ítems asignados.</p>'}</div></div>
       </div></div>`}).join('');
@@ -390,7 +394,7 @@ function renderWorkers(){
   $('#workers-grid').innerHTML=L.length?L.map(w=>{const A=events.filter(e=>!e.done&&(e.workerId===w.id||(e.extraWorkers||[]).includes(w.id)));return`<div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-3 relative">
     <button onclick="deleteWorker('${w.id}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors text-xs"><i class="fa-solid fa-trash-can"></i></button>
     <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-lg">${esc(w.name.charAt(0))}</div><div><h3 class="font-bold text-sm text-white">${esc(w.name)}</h3><p class="text-xs text-emerald-400">${esc(w.role)}</p></div></div>
-    <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800"><p><i class="fa-solid fa-phone w-4 text-slate-500"></i> ${esc(w.phone)||'Sin número'}</p><p><i class="fa-solid fa-tag w-4 text-slate-500"></i> Área: ${w.brand}</p></div>
+    <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800"><p><i class="fa-solid fa-phone w-4 text-slate-500"></i> ${esc(w.phone)||'Sin número'}</p><p><i class="fa-solid fa-envelope w-4 text-slate-500"></i> ${w.email?esc(w.email):'<span class="text-amber-400">Sin correo (no recibe invitaciones)</span>'}</p><p><i class="fa-solid fa-tag w-4 text-slate-500"></i> Área: ${w.brand}</p></div>
     <div class="pt-2"><span class="text-[11px] font-bold text-slate-400 block mb-1">Eventos Asignados (${A.length}):</span><div class="space-y-1">${A.map(e=>`<span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] border border-slate-700 mr-1 mb-1">${esc(e.name)} <b class="text-slate-400 font-medium">· ${e.workerId===w.id?'Responsable':'Apoyo'}</b></span>`).join('')||'<span class="text-[10px] text-slate-500 italic">Ningún evento asignado.</span>'}</div></div></div>`}).join(''):'<div class="col-span-full py-12 text-center text-slate-500"><i class="fa-solid fa-users-slash text-4xl mb-3 text-slate-600 block"></i><p class="text-sm">No hay miembros registrados para esta marca.</p></div>';
 }
 function deleteWorker(id){if(confirm('¿Eliminar este trabajador del registro?')){workers=workers.filter(w=>w.id!==id);saveData()}}
@@ -399,16 +403,16 @@ function markDone(id){
   const e=events.find(x=>x.id===id);if(!e)return;
   const pend=(e.assignedItems||[]).filter(a=>{const it=items.find(i=>i.id===a.itemId);return it&&(it.consumable?!a.deliv:!a.ret)}).length;
   if(pend&&!confirm(`Hay ${pend} ítem(s) del checklist sin marcar (devolución o entrega). ¿Marcar el evento como realizado de todos modos?`))return;
-  e.done=true;e.doneAt=todayStr();saveData();
+  e.done=true;e.doneAt=todayStr();saveData();window.calCall&&window.calCall({action:'reportOpen',id,open:false});
 }
-function reopenEvent(id){const e=events.find(x=>x.id===id);if(!e)return;e.done=false;delete e.doneAt;saveData()}
-function deleteEvent(id){if(confirm('¿Deseas cancelar y eliminar este evento?')){events=events.filter(e=>e.id!==id);saveData()}}
+function reopenEvent(id){const e=events.find(x=>x.id===id);if(!e)return;e.done=false;delete e.doneAt;saveData();window.calCall&&window.calCall({action:'reportOpen',id,open:true})}
+function deleteEvent(id){if(confirm('¿Deseas cancelar y eliminar este evento?')){events=events.filter(e=>e.id!==id);saveData();window.calCall&&window.calCall({action:'delete',id})}}
 
 /* ---- Resumen para pegar en WhatsApp ---- */
-function eventSummary(e){
+function eventSummary(e,plain){
   const w=workers.find(x=>x.id===e.workerId),L=[];
   const P=x=>x.name+' ('+x.role+')'+(x.phone?' - '+x.phone:'');
-  L.push('*'+e.name+'*','');
+  L.push(plain?e.name:'*'+e.name+'*','');
   L.push('Marca: '+e.brand);
   L.push('Fecha: '+(endOf(e)===e.date?e.date:e.date+' al '+endOf(e)));
   if(e.tStart)L.push('Hora del show: '+e.tStart+' a '+e.tEnd);
@@ -424,6 +428,116 @@ async function copySummary(id,btn){
   const t=eventSummary(events.find(e=>e.id===id));
   try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}
   const o=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-check mr-1"></i> ¡Copiado!';setTimeout(()=>{btn.innerHTML=o},1800);
+}
+
+/* ---- Invitaciones de Google Calendar ---- */
+function toast(msg,err){const d=document.createElement('div');d.className='fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-xl text-xs font-semibold shadow-xl max-w-[90vw] text-center '+(err?'bg-rose-600 text-white':'bg-emerald-600 text-white');d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),5000)}
+const teamOf=e=>[e.workerId,...(e.extraWorkers||[])].map(id=>workers.find(w=>w.id===id)).filter(Boolean);
+async function syncCal(e){
+  if(!window.calCall||!e.tStart)return;
+  const T=teamOf(e),emails=[...new Set(T.map(w=>w.email).filter(Boolean))],sin=T.filter(w=>!w.email).map(w=>w.name);
+  const resp=workers.find(w=>w.id===e.workerId)||{};
+  const r=await window.calCall({action:'upsert',id:e.id,title:e.name,date:e.date,tStart:e.tStart,tEnd:e.tEnd,location:e.location,description:eventSummary(e,true),emails,reportToken:e.reportToken,link:reportLink(e),responsibleEmail:resp.email||''});
+  if(r&&r.ok)toast((emails.length?`Invitación enviada a ${emails.length} persona(s).`:'Evento guardado, pero nadie tiene correo registrado.')+(sin.length?` Sin correo: ${sin.join(', ')}.`:'')+(r.mailed?' Enlace del reporte enviado al responsable.':(!resp.email?' El responsable no tiene correo: no se envió el enlace del reporte.':'')),!emails.length);
+  else toast('No se pudo enviar la invitación: '+((r&&r.error)||'error desconocido'),true);
+  rsvpAt=0;
+}
+let rsvpData={},rsvpAt=0;
+async function refreshRsvp(force){
+  if(!window.calCall||(!force&&Date.now()-rsvpAt<15000))return;
+  const ids=events.filter(e=>!e.done&&e.tStart).map(e=>e.id);if(!ids.length)return;
+  rsvpAt=Date.now();
+  const r=await window.calCall({action:'status',ids});
+  if(r&&r.ok){rsvpData=r.estados||{};if(currentTab==='events')renderEvents();if(force)toast('Confirmaciones actualizadas.')}
+  else if(force)toast('No se pudieron leer las confirmaciones.',true);
+}
+function rsvpBlock(evt){
+  const R=rsvpData[evt.id];if(!R)return'';
+  const L=teamOf(evt).filter(w=>w.email);if(!L.length)return'';
+  const lab={YES:['Confirmó','text-emerald-400','circle-check'],NO:['Rechazó','text-rose-400','circle-xmark'],MAYBE:['Quizás','text-amber-400','circle-question'],INVITED:['Sin responder','text-slate-400','clock']};
+  return`<div class="pt-1"><p class="text-[11px] font-bold text-slate-400 mb-1">Confirmaciones:</p>${L.map(w=>{const st=lab[R[w.email.toLowerCase()]]||lab.INVITED;return`<p class="text-[11px] ${st[1]}"><i class="fa-solid fa-${st[2]} mr-1"></i>${esc(w.name)} · ${st[0]}</p>`}).join('')}</div>`;
+}
+
+/* ---- Reportes de eventos (fotos y texto subidos por el responsable) ---- */
+function genToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return[...a].map(b=>b.toString(36).padStart(2,'0')).join('').slice(0,40)}
+const reportLink=e=>window.CAL_URL+'?r='+e.reportToken;
+let reportState={id:null,subs:[],closed:false};
+async function copyText(t){try{await navigator.clipboard.writeText(t)}catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}}
+function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+const b64Blob=(b,m)=>{const bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:m||'application/octet-stream'})};
+async function getReportFile(p){const r=await window.calCall({action:'reportFile',id:reportState.id,fileId:p.id});if(!r||!r.ok)throw new Error((r&&r.error)||'error');return r}
+
+function reportBody(e,st){
+  const link=reportLink(e),subs=st.subs,n=subs.reduce((a,s)=>a+s.photos.length,0);
+  const bb='px-3 py-1.5 rounded-xl text-xs font-semibold ';
+  return`<div class="space-y-4">
+    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+      <p class="text-[11px] text-slate-400">Enlace para que el responsable suba el reporte (sin iniciar sesión):</p>
+      <div class="flex gap-2"><input readonly value="${esc(link)}" onclick="this.select()" class="${IC} text-[11px]"><button onclick="copyText('${esc(link)}').then(()=>toast('Enlace copiado.'))" class="${bb}bg-slate-800 hover:bg-slate-700 text-slate-200 whitespace-nowrap">Copiar</button></div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="resendReport()" class="${bb}bg-sky-500/10 hover:bg-sky-500/20 text-sky-400"><i class="fa-solid fa-paper-plane mr-1"></i> Enviar al correo del responsable</button>
+        <button onclick="toggleReportOpen()" class="${bb}bg-slate-800 hover:bg-slate-700 text-slate-200">${st.closed?'Reabrir subida':'Cerrar subida'}</button>
+        <span class="text-[11px] ${st.closed?'text-amber-400':'text-emerald-400'}">${st.closed?'Subida cerrada':'Subida abierta'}</span>
+      </div></div>
+    ${subs.length?`<div class="flex items-center justify-between"><p class="text-xs font-bold text-slate-200">${subs.length} reporte(s) · ${n} foto(s)</p>${n?`<button id="rep-zip" onclick="downloadAllReport()" class="${bb}bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-file-zipper mr-1"></i> Descargar todas (.zip)</button>`:''}</div>`:'<p class="text-center text-xs text-slate-500 py-6">Aún no hay reportes enviados para este evento.</p>'}
+    ${subs.map((s,si)=>`<div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/60 space-y-2">
+      <div class="flex items-center justify-between text-xs"><span class="font-bold text-white"><i class="fa-solid fa-user mr-1 text-sky-400"></i>${esc(s.author)}</span><span class="text-slate-400">${esc(s.date)}</span></div>
+      ${s.text?`<p class="text-xs text-slate-300 whitespace-pre-wrap">${esc(s.text)}</p>`:''}
+      ${s.photos.length?`<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">${s.photos.map((p,pi)=>`<button onclick="downloadReportPhoto(${si},${pi})" title="Descargar en HD · ${esc(p.name)}" class="relative aspect-square rounded-lg overflow-hidden bg-slate-900 border border-slate-700 flex items-center justify-center">${p.thumb?`<img src="data:image/jpeg;base64,${p.thumb}" class="w-full h-full object-cover">`:'<i class="fa-solid fa-image text-slate-600 text-xl"></i>'}<span class="absolute inset-x-0 bottom-0 bg-black/60 text-[9px] text-white py-0.5 text-center"><i class="fa-solid fa-download mr-1"></i>HD</span></button>`).join('')}</div>`:''}
+    </div>`).join('')}
+    ${subs.length?`<button onclick="deleteReportFiles()" class="text-[11px] text-rose-400 hover:underline">Borrar los archivos de este reporte del servidor</button>`:''}
+  </div>`;
+}
+async function openReport(id){
+  const e=events.find(x=>x.id===id);if(!e)return;
+  if(!e.reportToken){e.reportToken=genToken();saveData()}
+  const title=`<i class="fa-solid fa-clipboard-list text-sky-400"></i> Reporte · ${esc(e.name)}`;
+  showModal('modal-report','max-w-3xl',title,'<p class="text-xs text-slate-400 py-6 text-center"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Cargando reporte...</p>');
+  const r=await window.calCall({action:'reportList',id,title:e.name,reportToken:e.reportToken,link:reportLink(e)});
+  if(!$('#modal-report'))return;
+  if(!r||!r.ok){showModal('modal-report','max-w-3xl',title,`<p class="text-xs text-rose-400 py-6 text-center">No se pudo cargar el reporte: ${esc((r&&r.error)||'error de conexión')}</p>`);return}
+  reportState={id,subs:r.subs||[],closed:!!r.closed};
+  showModal('modal-report','max-w-3xl',title,reportBody(e,reportState));
+}
+async function resendReport(){
+  const e=events.find(x=>x.id===reportState.id),w=e&&workers.find(x=>x.id===e.workerId);
+  if(!w||!w.email)return toast('El responsable no tiene correo registrado. Copia el enlace y envíaselo por WhatsApp.',true);
+  const r=await window.calCall({action:'reportResend',id:e.id,title:e.name,reportToken:e.reportToken,link:reportLink(e),responsibleEmail:w.email,date:e.date,tStart:e.tStart,tEnd:e.tEnd,location:e.location});
+  toast(r&&r.ok?'Enlace enviado a '+w.email:'No se pudo enviar: '+((r&&r.error)||'error'),!(r&&r.ok));
+}
+async function toggleReportOpen(){
+  const id=reportState.id,r=await window.calCall({action:'reportOpen',id,open:reportState.closed});
+  if(!r||!r.ok)return toast('No se pudo cambiar el estado.',true);
+  openReport(id);
+}
+async function downloadReportPhoto(si,pi){
+  const p=reportState.subs[si].photos[pi];toast('Descargando '+p.name+'...');
+  try{const r=await getReportFile(p);saveBlob(b64Blob(r.data,r.mime),r.name)}catch(e){toast('No se pudo descargar: '+e.message,true)}
+}
+async function downloadAllReport(){
+  if(!window.JSZip)return toast('No se cargó el compresor. Revisa tu conexión.',true);
+  const btn=$('#rep-zip'),ev=events.find(x=>x.id===reportState.id),zip=new JSZip(),all=[],used=new Set();
+  reportState.subs.forEach(s=>s.photos.forEach(p=>all.push([s,p])));
+  zip.file('reportes.txt',reportState.subs.map(s=>`${s.author} · ${s.date}\n${s.text||'(sin texto)'}`).join('\n\n------------------------------\n\n'));
+  btn.disabled=true;
+  try{
+    for(let i=0;i<all.length;i++){
+      btn.textContent=`Descargando ${i+1} de ${all.length}...`;
+      const [s,p]=all[i],r=await getReportFile(p);
+      let name=(s.author.replace(/[\\/:*?"<>|]+/g,' ').trim()||'reporte')+'/'+r.name;
+      if(used.has(name))name=name.replace(/\/(.*)$/,'/'+i+'_$1');
+      used.add(name);zip.file(name,b64Blob(r.data,r.mime));
+    }
+    btn.textContent='Armando el .zip...';
+    saveBlob(await zip.generateAsync({type:'blob',compression:'STORE'}),'Reporte - '+(ev?ev.name:'evento')+'.zip');
+  }catch(e){toast('No se pudo armar el .zip: '+e.message,true)}
+  btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-file-zipper mr-1"></i> Descargar todas (.zip)';
+}
+async function deleteReportFiles(){
+  if(!confirm('Se borrarán del servidor las fotos y textos de este reporte. Descárgalos antes si los necesitas. ¿Continuar?'))return;
+  const id=reportState.id,r=await window.calCall({action:'reportDelete',id});
+  toast(r&&r.ok?'Archivos borrados.':'No se pudo borrar.',!(r&&r.ok));
+  if(r&&r.ok)openReport(id);
 }
 
 /* ---- Modales ---- */
@@ -460,13 +574,20 @@ function saveItem(e,id){
   openPanels.add(o.panel);closeModal();saveData();
 }
 
-function openWorker(){
-  showModal('modal-worker','max-w-md','<i class="fa-solid fa-user-plus text-emerald-400"></i> Registrar Trabajador',`<form onsubmit="saveWorker(event)" class="space-y-4">
-  ${fld('Nombre Completo *',`<input id="worker-name" required placeholder="Ej: Carlos Mendoza" class="${IC.replace('purple','emerald')}">`)}
-  <div class="grid grid-cols-2 gap-3">${fld('Rol / Cargo *',`<input id="worker-role" required placeholder="Ej: Bartender / Animador" class="${IC.replace('purple','emerald')}">`)}${fld('Teléfono / Celular',`<input type="tel" id="worker-phone" placeholder="+593 99 123 4567" class="${IC.replace('purple','emerald')}">`)}</div>
-  ${fld('Sub-marca Principal',`<select id="worker-brand" class="${IC.replace('purple','emerald')}">${brandOpts('TODAS',true)}</select>`)}${actions('bg-emerald-600 hover:bg-emerald-500','Registrar')}</form>`);
+function openWorker(id){
+  const w=workers.find(x=>x.id===id)||{brand:'TODAS'},EC=IC.replace('purple','emerald');
+  showModal('modal-worker','max-w-md',`<i class="fa-solid fa-${id?'pen-to-square':'user-plus'} text-emerald-400"></i> ${id?'Editar Trabajador':'Registrar Trabajador'}`,`<form onsubmit="saveWorker(event,'${id||''}')" class="space-y-4">
+  ${fld('Nombre Completo *',`<input id="worker-name" required value="${esc(w.name)}" placeholder="Ej: Carlos Mendoza" class="${EC}">`)}
+  <div class="grid grid-cols-2 gap-3">${fld('Rol / Cargo *',`<input id="worker-role" required value="${esc(w.role)}" placeholder="Ej: Bartender / Animador" class="${EC}">`)}${fld('Teléfono / Celular',`<input type="tel" id="worker-phone" value="${esc(w.phone)}" placeholder="+593 99 123 4567" class="${EC}">`)}</div>
+  ${fld('Correo electrónico (para las invitaciones de calendario)',`<input type="email" id="worker-email" value="${esc(w.email)}" placeholder="trabajador@gmail.com" class="${EC}">`)}
+  ${fld('Sub-marca Principal',`<select id="worker-brand" class="${EC}">${brandOpts(w.brand,true)}</select>`)}${actions('bg-emerald-600 hover:bg-emerald-500',id?'Guardar':'Registrar')}</form>`);
 }
-function saveWorker(e){e.preventDefault();workers.push({id:'wrk-'+Date.now(),name:$('#worker-name').value,role:$('#worker-role').value,phone:$('#worker-phone').value,brand:$('#worker-brand').value});closeModal();saveData()}
+function saveWorker(e,id){
+  e.preventDefault();
+  const o={id:id||'wrk-'+Date.now(),name:$('#worker-name').value,role:$('#worker-role').value,phone:$('#worker-phone').value,email:$('#worker-email').value.trim().toLowerCase(),brand:$('#worker-brand').value};
+  id?workers[workers.findIndex(x=>x.id===id)]=o:workers.push(o);
+  closeModal();saveData();
+}
 
 function openEvent(id){
   if(!workers.length)return alert('Primero registra al menos un trabajador.');
@@ -523,9 +644,10 @@ function saveEvent(ev,id){
   old.forEach(a=>{if(a.consumed){const it=items.find(i=>i.id===a.itemId);if(it)it.quantity+=Number(a.qty)}});
   assigned.forEach(a=>{const it=items.find(i=>i.id===a.itemId);if(it&&it.consumable&&a.deliv){it.quantity=Math.max(0,it.quantity-a.qty);a.consumed=true}});
   const extra=[...document.querySelectorAll('.event-extra-worker:checked')].map(x=>x.value).filter(v=>v!==$('#event-worker').value);
-  const o={id:id||'evt-'+Date.now(),name:$('#event-name').value,brand:$('#event-brand').value,date:s,dateEnd:en,tStart:ts,tEnd:te,location:$('#event-location').value,workerId:$('#event-worker').value,extraWorkers:extra,assignedItems:assigned};
+  const prev=events.find(x=>x.id===id)||{};
+  const o={...prev,id:id||'evt-'+Date.now(),name:$('#event-name').value,brand:$('#event-brand').value,date:s,dateEnd:en,tStart:ts,tEnd:te,location:$('#event-location').value,workerId:$('#event-worker').value,extraWorkers:extra,reportToken:prev.reportToken||genToken(),assignedItems:assigned};
   id?events[events.findIndex(x=>x.id===id)]=o:events.push(o);
-  closeModal();saveData();
+  closeModal();saveData();syncCal(o);
 }
 
 selectedCalendarDateStr=todayStr();
@@ -550,6 +672,19 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const g = id => document.getElementById(id);
 let registering = false;
+
+/* ---------- Invitaciones de calendario (Google Apps Script) ---------- */
+const CAL_URL = 'https://script.google.com/macros/s/AKfycbyVkdUqFYGNesXiU0ByPu1FFvsmbUrXtEG5slLX-weTaQUMt7xagZj5WMP9vx-Lbyk97g/exec';
+window.CAL_URL = CAL_URL;
+window.calCall = async payload => {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { ok: false, error: 'Sin sesión' };
+    const idToken = await u.getIdToken();
+    const res = await fetch(CAL_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...payload, idToken }) });
+    return await res.json();
+  } catch (err) { console.error('Calendario:', err); return { ok: false, error: String(err) }; }
+};
 
 /* ---------- Sincronización en tiempo real ---------- */
 const COLS = ['panels','items','workers','events'];
